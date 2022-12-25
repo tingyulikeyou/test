@@ -38,6 +38,155 @@ OF SUCH DAMAGE.
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "gd32f10x.h"
+
+#include "stdlib.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include "string.h"
+
+
+//#define PUMP_PROJECT
+//#define DC_PUMP_SUPPORT 
+//#define CAMP_PROJECT
+//#define UI1K_V2_PROJECT
+//#define UI1K_V13_PROJECT
+//#define P10KW_PROJECT    //5KW  10KW
+#define E_MOB48V_PROJECT
+
+//bms  
+
+
+#ifdef P10KW_PROJECT
+#define BMS_OFFGRID_SUPPROT
+#elif defined(E_MOB48V_PROJECT)
+//#define BMS_SMARTLI_SUPPROT
+#define BMS_JBD_SUPPROT
+//#define BMS_JBD_14_SUPPORT
+
+#ifdef BMS_JBD_14_SUPPORT
+#define BMS_JBD_SUPPROT
+#endif
+#endif
+
+//others 
+#define GPS_SUPPORT
+#define E_SIM_SUPPORT 
+#define ROLL_SWITCH
+
+//#define DUBUG_LOG 
+//#define PUMP_TEST
+
+
+#include"gatt.h"
+#include"payg.h"
+#include "eeprom.h"
+#include "gsmcom.h"
+#include "timer.h"
+#include "atcmd.h"
+#include "camp.h"
+#include "mqtt.h"
+#include "menu.h"
+#include "key.h"
+#include "lcd.h"
+#include "pump.h"
+#include "Keyboard.h"
+#include "DS1302.h"
+#include "BQ40Z50.h"
+#include "SmartBms.h"
+#include "string.h"
+#include "adc.h"
+#include "temp.h"
+#include "coulom.h"
+#include "ble.h"
+#include "OffGrid.h"
+#include "Jbsbms.h"
+
+#ifdef GPS_SUPPORT
+#include "gps.h"
+#endif
+
+#ifdef BMS_309_SUPPORT
+#include "bms309proc.h"
+#endif
+
+#define DS_SCLK_Pin GPIO_PIN_13
+#define DS_SCLK_GPIO_Port GPIOC
+#define DS_IO_Pin GPIO_PIN_14
+#define DS_IO_GPIO_Port GPIOC
+#define DS_CE_Pin GPIO_PIN_15
+#define DS_CE_GPIO_Port GPIOC
+#define GSM_EN_Pin GPIO_PIN_0
+#define GSM_EN_GPIO_Port GPIOA
+#define LCD_CS_Pin GPIO_PIN_4
+#define LCD_CS_GPIO_Port GPIOA
+#define LCD_CLK_Pin GPIO_PIN_5
+#define LCD_CLK_GPIO_Port GPIOA
+#define LCD_DAT_Pin GPIO_PIN_6
+#define LCD_DAT_GPIO_Port GPIOA
+#define BL_CTRL_Pin GPIO_PIN_0
+#define BL_CTRL_GPIO_Port GPIOB
+#define BLE_RESET_Pin GPIO_PIN_1
+#define BLE_RESET_GPIO_Port GPIOB
+#define BLE_CS_Pin GPIO_PIN_2
+#define BLE_CS_GPIO_Port GPIOB
+#define ENTER_KEY_Pin GPIO_PIN_12
+#define ENTER_KEY_GPIO_Port GPIOB
+#define SW_A_Pin GPIO_PIN_13
+#define SW_A_GPIO_Port GPIOB
+//#define SW_A_EXTI_IRQn EXTI15_10_IRQn
+#define SW_B_Pin GPIO_PIN_14
+#define SW_B_GPIO_Port GPIOB
+//#define SW_B_EXTI_IRQn EXTI15_10_IRQn
+#define PWR_KEY_Pin GPIO_PIN_15
+#define PWR_KEY_GPIO_Port GPIOB
+#define PWR_CTRL_Pin GPIO_PIN_8
+#define PWR_CTRL_GPIO_Port GPIOA
+#define UART_SEL_Pin GPIO_PIN_11
+#define UART_SEL_GPIO_Port GPIOA
+#define KEY_ENTER_Pin GPIO_PIN_15
+#define KEY_ENTER_GPIO_Port GPIOA
+#define KEY_UP_Pin GPIO_PIN_3
+#define KEY_UP_GPIO_Port GPIOB
+#define KEY_DOWN_Pin GPIO_PIN_4
+#define KEY_DOWN_GPIO_Port GPIOB
+#define LCD_CSB5_Pin GPIO_PIN_5
+#define LCD_CSB5_GPIO_Port GPIOB
+#define LCD_CLKB8_Pin GPIO_PIN_8
+#define LCD_CLKB8_GPIO_Port GPIOB
+#define LCD_DATB9_Pin GPIO_PIN_9
+#define LCD_DATB9_GPIO_Port GPIOB
+
+//#define RELAY_EN_Pin GPIO_PIN_13
+//#define RELAY_EN_GPIO_Port GPIOA
+
+
+
+#define GPIO_PIN_SET  SET
+#define GPIO_PIN_RESET  RESET
+#define  HAL_GPIO_WritePin(port,pin,value)     gpio_bit_write(port, pin, value)
+#define HAL_GPIO_ReadPin(port,pin)   gpio_input_bit_get(port,pin)
+
+typedef struct
+{
+	uint8_t *pRxBuffPtr;		/*!< Pointer to UART Rx transfer Buffer */
+	
+	__IO uint16_t RxXferSize;		/*!< UART Rx Transfer size				*/
+	
+	__IO uint16_t RxXferCount;		/*!< UART Rx Transfer Counter			*/
+
+}UART_HandleTypeDef;
+
+void Uart1Send(uint8_t *buffer,uint16_t size);
+void Uart2Send(uint8_t *buffer,uint16_t size);
+void Uart3Send(uint8_t *buffer,uint16_t size);
+void Uart4Send(uint8_t *buffer,uint16_t size);
+void Uart5Send(uint8_t *buffer,uint16_t size);
+
+
+
+
+
 /* led spark function */
 void led_spark(void);
 

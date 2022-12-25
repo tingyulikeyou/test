@@ -38,6 +38,14 @@ OF SUCH DAMAGE.
 #include "main.h"
 #include "systick.h"
 
+
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart5;
+
+
 /*!
     \brief      this function handles NMI exception
     \param[in]  none
@@ -140,4 +148,124 @@ void SysTick_Handler(void)
 {
     led_spark();
     delay_decrement();
+
+	
+	HAL_SYSTICK_Callback();
 }
+
+/*!
+    \brief      this function handles USART RBNE interrupt request and TBE interrupt request
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void USART0_IRQHandler(void)
+{
+    if(RESET != usart_interrupt_flag_get(USART0, USART_INT_FLAG_RBNE)){
+        /* receive data */
+
+		if(huart1.pRxBuffPtr!=NULL)
+		{
+			huart1.pRxBuffPtr[huart1.RxXferCount++]=usart_data_receive(USART0);
+			if(huart1.RxXferCount>=huart1.RxXferSize)
+				huart1.RxXferCount=0;
+			}
+		
+       // }
+    }
+    if(RESET != usart_interrupt_flag_get(USART0, USART_INT_FLAG_TBE)){
+        /* transmit data */
+       // usart_data_transmit(USART0, txbuffer[txcount++]);
+       // if(txcount == tx_size){
+        //    usart_interrupt_disable(USART0, USART_INT_TBE);
+       // }
+    }
+}
+
+void USART1_IRQHandler(void)
+{
+    if(RESET != usart_interrupt_flag_get(USART1, USART_INT_FLAG_RBNE)){
+        /* receive data */
+
+	   if(huart2.pRxBuffPtr!=NULL)
+	   	{
+	       huart2.pRxBuffPtr[huart2.RxXferCount++]=usart_data_receive(USART1);
+			if(huart2.RxXferCount>=huart2.RxXferSize)
+				huart2.RxXferCount=0;
+	   	}
+       // }
+    }
+    if(RESET != usart_interrupt_flag_get(USART1, USART_INT_FLAG_TBE)){
+        /* transmit data */
+       // usart_data_transmit(USART0, txbuffer[txcount++]);
+       // if(txcount == tx_size){
+       //     usart_interrupt_disable(USART0, USART_INT_TBE);
+      //  }
+    }
+}
+
+
+void USART2_IRQHandler(void)
+{
+    if(RESET != usart_interrupt_flag_get(USART2, USART_INT_FLAG_RBNE)){
+        /* receive data */
+
+		if(huart3.pRxBuffPtr!=NULL)
+		{
+	        huart3.pRxBuffPtr[huart3.RxXferCount++]=usart_data_receive(USART2);
+			if(huart3.RxXferCount>=huart3.RxXferSize)
+				huart3.RxXferCount=0;
+			}
+       // }
+    }
+    if(RESET != usart_interrupt_flag_get(USART2, USART_INT_FLAG_TBE)){
+        /* transmit data */
+      //  usart_data_transmit(USART0, txbuffer[txcount++]);
+      //  if(txcount == tx_size){
+      //      usart_interrupt_disable(USART0, USART_INT_TBE);
+     //   }
+    }
+}
+
+void UART3_IRQHandler(void)
+{
+    if(RESET != usart_interrupt_flag_get(UART3, USART_INT_FLAG_RBNE)){
+        /* receive data */
+	 if(huart4.pRxBuffPtr!=NULL)
+     {  huart4.pRxBuffPtr[huart4.RxXferCount++]=usart_data_receive(UART3);
+		if(huart4.RxXferCount>=huart4.RxXferSize)
+			huart4.RxXferCount=0;
+		}
+    }
+    if(RESET != usart_interrupt_flag_get(UART3, USART_INT_FLAG_TBE)){
+        /* transmit data */
+      //  usart_data_transmit(USART0, txbuffer[txcount++]);
+      //  if(txcount == tx_size){
+     //       usart_interrupt_disable(USART0, USART_INT_TBE);
+        //}
+    }
+}
+
+
+void UART4_IRQHandler(void)
+{
+    if(RESET != usart_interrupt_flag_get(UART4, USART_INT_FLAG_RBNE)){
+        /* receive data */
+		if(huart5.pRxBuffPtr!=NULL)
+	    {   huart5.pRxBuffPtr[huart5.RxXferCount++]=usart_data_receive(UART4);
+			if(huart5.RxXferCount>=huart5.RxXferSize)
+				huart5.RxXferCount=0;
+			}
+    }
+    if(RESET != usart_interrupt_flag_get(UART4, USART_INT_FLAG_TBE)){
+        /* transmit data */
+       // usart_data_transmit(USART0, txbuffer[txcount++]);
+       // if(txcount == tx_size){
+        //    usart_interrupt_disable(USART0, USART_INT_TBE);
+      //  }
+    }
+}
+
+
+
+

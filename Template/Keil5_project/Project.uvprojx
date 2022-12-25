@@ -10,15 +10,14 @@
       <TargetName>GD32F10X_CL</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5060750::V5.06 update 6 (build 750)::ARMCC</pArmCC>
       <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>GD32F107VC</Device>
           <Vendor>GigaDevice</Vendor>
-          <PackID>GigaDevice.GD32F10x_DFP.2.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>GigaDevice.GD32F10x_DFP.2.0.3</PackID>
+          <PackURL>https://gd32mcu.com/data/documents/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00018000) IROM(0x08000000,0x00040000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -398,6 +397,121 @@
               <FileType>1</FileType>
               <FilePath>..\systick.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>AtCmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\AtCmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ40Z50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\BQ40Z50.c</FilePath>
+            </File>
+            <File>
+              <FileName>Camp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Camp.c</FilePath>
+            </File>
+            <File>
+              <FileName>coulom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\coulom.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\DS1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\eeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>Gatt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Gatt.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>GsmCom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\GsmCom.c</FilePath>
+            </File>
+            <File>
+              <FileName>JbsBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\JbsBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>Keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>Menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>OffGrid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\OffGrid.c</FilePath>
+            </File>
+            <File>
+              <FileName>payg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\payg.c</FilePath>
+            </File>
+            <File>
+              <FileName>Pump.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Pump.c</FilePath>
+            </File>
+            <File>
+              <FileName>SmartBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\SmartBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -702,8 +816,8 @@
         <TargetCommonOption>
           <Device>GD32F103VB</Device>
           <Vendor>GigaDevice</Vendor>
-          <PackID>GigaDevice.GD32F10x_DFP.2.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>GigaDevice.GD32F10x_DFP.2.0.3</PackID>
+          <PackURL>https://gd32mcu.com/data/documents/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00005000) IROM(0x08000000,0x00020000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -1083,6 +1197,121 @@
               <FileType>1</FileType>
               <FilePath>..\systick.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>AtCmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\AtCmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ40Z50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\BQ40Z50.c</FilePath>
+            </File>
+            <File>
+              <FileName>Camp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Camp.c</FilePath>
+            </File>
+            <File>
+              <FileName>coulom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\coulom.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\DS1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\eeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>Gatt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Gatt.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>GsmCom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\GsmCom.c</FilePath>
+            </File>
+            <File>
+              <FileName>JbsBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\JbsBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>Keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>Menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>OffGrid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\OffGrid.c</FilePath>
+            </File>
+            <File>
+              <FileName>payg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\payg.c</FilePath>
+            </File>
+            <File>
+              <FileName>Pump.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Pump.c</FilePath>
+            </File>
+            <File>
+              <FileName>SmartBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\SmartBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1380,21 +1609,20 @@
       <TargetName>GD32F10X_HD</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5060750::V5.06 update 6 (build 750)::ARMCC</pArmCC>
-      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+      <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>GD32F103VC</Device>
+          <Device>GD32F103RC</Device>
           <Vendor>GigaDevice</Vendor>
-          <PackID>GigaDevice.GD32F10x_DFP.2.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>GigaDevice.GD32F10x_DFP.2.0.3</PackID>
+          <PackURL>https://gd32mcu.com/data/documents/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x0000C000) IROM(0x08000000,0x00040000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0GD32F10x_HD -FS08000000 -FL040000 -FP0($$Device:GD32F103VC$Flash\GD32F10x_HD.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0GD32F10x_HD -FS08000000 -FL040000 -FP0($$Device:GD32F103RC$Flash\GD32F10x_HD.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:GD32F103VC$Device\Include\gd32f10x.h</RegisterFile>
+          <RegisterFile>$$Device:GD32F103RC$Device\Include\gd32f10x.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -1404,7 +1632,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:GD32F103VC$SVD\GD32F10x\GD32F10x_HD.svd</SFDFile>
+          <SFDFile>$$Device:GD32F103RC$SVD\GD32F10x\GD32F10x_HD.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -1509,7 +1737,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -1709,7 +1937,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,GD32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Firmware\CMSIS\GD\GD32F10x\Include;..\..\Firmware\CMSIS;..\..\Utilities;..\;..\..\Utilities\LCD_common;..\..\Firmware\GD32F10x_standard_peripheral\Include</IncludePath>
+              <IncludePath>..\..\Firmware\CMSIS\GD\GD32F10x\Include;..\..\Firmware\CMSIS;..\..\Utilities;..\;..\..\Utilities\LCD_common;..\..\Firmware\GD32F10x_standard_peripheral\Include;..\..\Core\Inc;..\..\Core\Inc\bms309</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1767,6 +1995,121 @@
               <FileName>systick.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\systick.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>AtCmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\AtCmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ40Z50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\BQ40Z50.c</FilePath>
+            </File>
+            <File>
+              <FileName>Camp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Camp.c</FilePath>
+            </File>
+            <File>
+              <FileName>coulom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\coulom.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\DS1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\eeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>Gatt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Gatt.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>GsmCom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\GsmCom.c</FilePath>
+            </File>
+            <File>
+              <FileName>JbsBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\JbsBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>Keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>Menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>OffGrid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\OffGrid.c</FilePath>
+            </File>
+            <File>
+              <FileName>payg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\payg.c</FilePath>
+            </File>
+            <File>
+              <FileName>Pump.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Pump.c</FilePath>
+            </File>
+            <File>
+              <FileName>SmartBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\SmartBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2072,8 +2415,8 @@
         <TargetCommonOption>
           <Device>GD32F103VK</Device>
           <Vendor>GigaDevice</Vendor>
-          <PackID>GigaDevice.GD32F10x_DFP.2.0.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>GigaDevice.GD32F10x_DFP.2.0.3</PackID>
+          <PackURL>https://gd32mcu.com/data/documents/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00018000) IROM(0x08000000,0x00300000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -2452,6 +2795,121 @@
               <FileName>systick.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\systick.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>AtCmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\AtCmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>BQ40Z50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\BQ40Z50.c</FilePath>
+            </File>
+            <File>
+              <FileName>Camp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Camp.c</FilePath>
+            </File>
+            <File>
+              <FileName>coulom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\coulom.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\DS1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\eeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>Gatt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Gatt.c</FilePath>
+            </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>GsmCom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\GsmCom.c</FilePath>
+            </File>
+            <File>
+              <FileName>JbsBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\JbsBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>Keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Keyboard.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>Menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>OffGrid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\OffGrid.c</FilePath>
+            </File>
+            <File>
+              <FileName>payg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\payg.c</FilePath>
+            </File>
+            <File>
+              <FileName>Pump.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Pump.c</FilePath>
+            </File>
+            <File>
+              <FileName>SmartBms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\SmartBms.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\Timer.c</FilePath>
             </File>
           </Files>
         </Group>
