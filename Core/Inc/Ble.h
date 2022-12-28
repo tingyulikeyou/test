@@ -214,8 +214,8 @@ typedef struct
 
 } BLE_PACKET_TypeDef;
 
-
-void BleCmdProc(uint8_t *uartbuff);
+void BleUartInit(void);
+void BleCmdProc(void);
 void BlePacktSend(uint8_t cmd,uint8_t *data,uint16_t lenght);
 uint8_t  BlePacktParse(uint8_t *buf,uint8_t *data,uint8_t*len);
 void BleComEnable(void);

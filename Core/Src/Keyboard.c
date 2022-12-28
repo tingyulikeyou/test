@@ -181,7 +181,7 @@ void KeyBoardInit(void)
 	//  HAL_UART_Receive_IT(&huart1,g_Uart1Buf,UART3_RX_BUF_SIZE);
 	  //HAL_UART_Receive_IT(&huart3,(uint8_t*)g_Uart3Buf,UART3_RX_BUF_SIZE);
 
-	huart5.pRxBuffPtr=g_Uart5Buf;
+	huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf;
 	huart5.RxXferCount=0;
 	huart5.RxXferSize=UART5_RX_BUF_SIZE;
 	  
@@ -196,7 +196,7 @@ void Printf_Usart_num(unsigned char *str, int num)
 void KeyBoardHand(void)
 {
 	// HAL_UART_Transmit_IT(&huart3,(uint8_t *)cmd_handcmd,6);
-	Uart5Send(cmd_handcmd,6);
+	Uart5Send((uint8_t*)cmd_handcmd,6);
 }
 
 

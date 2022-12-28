@@ -25,6 +25,13 @@ void BleComEnable(void)
 	g_bleComEnable=TRUE;
 
 }
+void BleUartInit(void)
+{
+    huart1.RxXferCount=0;
+	huart1.RxXferSize=UART1_RX_BUF_SIZE;
+    huart1.pRxBuffPtr=(uint8_t*)g_Uart1Buf; 
+
+}
 
 
 void BleSend(uint8_t *data ,uint8_t size)
@@ -1028,16 +1035,19 @@ void BleDataReprot(uint8_t cmd )
 
 }
 
-void BleCmdProc(uint8_t *uartbuff)
+void BleCmdProc(void)
 {
 	uint8_t buffer[32];
 	uint8_t size=0,ret_len=0;
 	uint8_t ack=FALSE,i=0;
 	uint16_t temp16=0;
+	uint8_t *uartbuff=(uint8_t*)g_Uart1Buf;
 
 	memset(buffer,0x00,32);
 
 	#ifdef BLE_ENABLE
+
+	BleDataCheck();
 
 	if(BlePacktParse(uartbuff,buffer,&ret_len))
 	{

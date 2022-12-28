@@ -27,6 +27,7 @@ extern TIMER_TypeDef g_AtAckTout_timer;
 
 extern USER_SET_TypeDef g_UserSet;
 
+extern uint8_t g_GsmExist;
 
 uint8_t GmsGetSimcardState(void)
 {
@@ -66,12 +67,16 @@ void GsmComInit(void)
 {
 	AtCmdInit();
 	MqttInit();
+	#ifndef MODULE_4G
 	SmsInit();
+	#endif
 }
 
 void GsmComProc(void)
 {
+	#ifndef MODULE_4G
 	SmsProc();
+	#endif
 	MqttProc();
 	AtCmdProc();
 
@@ -94,6 +99,10 @@ void GsmComProc(void)
 void MqttInit(void)
 {
 	g_Mqtt_State=MQTT_STATE_IDLE;
+	#ifdef MODULE_4G
+	g_Mqtt_State=MQTT_STATE_INIT;
+	HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_SET);
+	#endif
 }
 
 void SmsInit(void)
@@ -127,7 +136,299 @@ void MqttProc(void)
 
 	if(g_Mqtt_hold)
 		return ;
+	#ifdef MODULE_4G
+	switch(g_Mqtt_State)
+		{
+			case MQTT_STATE_IDLE:  
+				break;
+			case MQTT_STATE_INIT:
+				AtCmdMerge(AT_CMD_AT);
+				g_Mqtt_State=MQTT_STATE_AT;
+				TimerAtTOutStart(5000U,TRUE);
+				break;
+			case MQTT_STATE_AT:
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_AT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_CSQ;
+					}
+				break;
+			case MQTT_STATE_CSQ: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CSQ);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_CREG;
+					
+					CampStart();
+					}
+				break;
+				
+			case MQTT_STATE_CREG:
+				if(g_AtAckState==AT_ACK_OK)
+				{	
+					AtCmdMerge(AT_CMD_CREG);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_COPS_Q;
+					
+					}
+				break;
+			case MQTT_STATE_COPS_Q:
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_COPS_Q);
+					TimerAtTOutStart(5000U,TRUE);
+
+					//g_Mqtt_State=MQTT_STATE_COPS;
+					g_Mqtt_State=MQTT_STATE_CGREG;
+					
+					}
+				break;	
+			case MQTT_STATE_COPS:
+				if(g_AtAckState==AT_ACK_OK||g_AtAckTout_timer.retry)
+				{	AtCmdMerge(AT_CMD_COPS);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CGREG;
+					}
+				break;		
+			case MQTT_STATE_CGREG:
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CGREG);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CGDCONT;//MQTT_STATE_CPSI;
+					
+					}
+				break;	
+			case MQTT_STATE_CGDCONT: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CGDCOUNT);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CPSI;//MQTT_STATE_CGACT;
+					}
+				break;
+			case MQTT_STATE_CPSI:
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CPSI);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CPSI_CHCK;
+					}
+				break;	
+			case MQTT_STATE_CPSI_CHCK:
+				if(g_AtAckTout_timer.retry/*g_AtAckState==AT_ACK_OK&&*/)
+				{	
+					//HAL_Delay(500);
+					AtCmdMerge(AT_CMD_CPSI);
+					TimerAtTOutStart(2000U,TRUE);
+
+					/*if(g_GsmExist)
+						g_Mqtt_State=MQTT_STATE_CGDCONT;
+					else
+						g_Mqtt_State=MQTT_STATE_MQTTSTART;*/
+					}
+				break;
+			case MQTT_STATE_CONNECT_CSQ:
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CSQ);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CGACT;//MQTT_STATE_CGDCONT;
+					}
+				break;
+			/*case MQTT_STATE_CGDCONT: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CGDCOUNT);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_CGACT;
+					}
+				break;*/
+			case MQTT_STATE_CGACT: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CGACT);
+					TimerAtTOutStart(5000U,TRUE);
+
+					g_Mqtt_State=MQTT_STATE_MQTTSTART;
+					}
+				break;	
+			case MQTT_STATE_MQTTSTART: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTSTART);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTACCQ;
+
+					AtSetSubscribeId();
+					AtSetTopicId(NULL);
+					}
+				break;
+			case MQTT_STATE_MQTTACCQ: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTACCQ);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTCONNECT;
+					}
+				break;	
+			case MQTT_STATE_MQTTCONNECT: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTCONNECT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTSUB;
+					}
+				if(g_AtAckTout_timer.retry>=AT_RETRY_CNT)//error counter
+				{	
+					if(g_SimCard_State)
+					{	g_UserSet.report_fail_cnt++;
+						EEpUpdateEnable();
+						}
 	
+					AtCmdMerge(AT_CMD_AT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_INIT;
+					}
+				
+				break;		
+			case MQTT_STATE_MQTTSUB: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTSUB);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTSUBACK;
+					}
+				break;
+			case MQTT_STATE_MQTTSUBACK:	
+			    
+				if(g_AtAckState==AT_ACK_OK)
+				{
+					//AtCmdMerge(AT_CMD_CGNSSPWR);
+					//HAL_Delay(500);
+					g_NetConnect_State=TRUE;
+					
+					if(g_UserSet.reportt_auto&&g_MqttReconnect==FALSE)
+					{	
+						AtCmdMerge(AT_CMD_CMQTTTOPIC);
+						TimerAtTOutStart(5000U,TRUE);
+						g_Mqtt_State=MQTT_STATE_MQTTPAYLOAD;
+						#ifdef MODULE_4G_USB_TEST
+						g_Mqtt_Request=MQTT_REQ_RAML;
+						#endif
+						}
+					else
+					{	
+						if(EEpGetWakeupCnt()>=EEpGetHeartbeat()&&g_MqttReconnect==FALSE)
+						{	
+							GattSingleFieldMerge("ppid");
+							MqttSetRequest(MQTT_REQ_SINGLEFIELD);
+							EEpSetWakeupCnt(0);
+							}
+						else
+							g_Mqtt_Request=MQTT_REQ_NONE;
+						
+						AtCmdMerge(AT_CMD_NONE);
+						TimerAtTOutStart(180000U,TRUE);
+						
+						g_Mqtt_State=MQTT_STATE_CHK_REQUEST;
+						g_MqttReconnect=FALSE;
+						
+					}
+					}
+				break;		
+			case MQTT_STATE_MQTTTOPIC: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTTOPIC);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTPAYLOAD;
+					}
+				break;		
+            case MQTT_STATE_MQTTPAYLOAD: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	
+					switch(MqttGetRequest())
+					{
+						case MQTT_REQ_NONE:
+							GattAllFieldJsonMerge();	
+							break;
+						case MQTT_REQ_ALLFIELD:
+							GattAllFieldJsonMerge();
+							break;
+						case MQTT_REQ_DTTYPE:
+							break;
+						case MQTT_REQ_SINGLEFIELD:
+							break;
+						case MQTT_REQ_CMD:
+							break;	
+						case MQTT_REQ_RAML:
+							GattMultiFieldMerge(); 
+							break;
+						}
+
+					AtCmdMerge(AT_CMD_CMQTTPAYLOAD);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTPUB;
+					}
+				break;	 
+			case MQTT_STATE_MQTTPUB: 
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CMQTTPUB);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_Request=MQTT_REQ_NONE;
+					g_Mqtt_State=MQTT_STATE_CHK_REQUEST;
+					}
+				break;		
+
+			case MQTT_STATE_CHK_REQUEST:
+				if(g_AtAckTout_timer.retry)
+				{
+					//TimerAtTOutStop();
+					AtCmdMerge(AT_CMD_AT);
+					//AtCmdMerge(AT_CMD_SIMSWITCH);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_CLBS4G;
+				}
+				
+				if(g_Mqtt_Request)
+				{
+					AtCmdMerge(AT_CMD_AT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTTOPIC;
+					}
+	
+				if(g_MqttReconnect)
+				{
+					AtCmdMerge(AT_CMD_AT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTSTART;
+					}
+
+				break;	
+			case MQTT_STATE_CGPSINFO:	
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CGPSINFOR);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_CLBS4G;
+					}
+				break;
+			case MQTT_STATE_CLBS4G:	
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CLBS);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_RT_CSQ;
+					}
+				break;	
+			case MQTT_STATE_RT_CSQ:	
+				if(g_AtAckState==AT_ACK_OK)
+				{	AtCmdMerge(AT_CMD_CSQ);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_CHK_REQUEST;
+					}
+				break;		
+				
+			case MQTT_STATE_END:
+				g_Mqtt_State=MQTT_STATE_IDLE;
+				break;
+			}
+
+	#else
 
 	switch(g_Mqtt_State)
 	{
@@ -373,6 +674,8 @@ void MqttProc(void)
 			//HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_RESET);
 			break;
 		}
+
+	#endif
 	
 }
 

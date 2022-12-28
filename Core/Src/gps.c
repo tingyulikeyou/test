@@ -18,72 +18,8 @@
 extern UART_HandleTypeDef huart4;
 extern uint8_t g_GattMem[MEM_GATT_SIZE];
  __IO uint8_t g_UartGpsBuf[UART4_RX_BUF_SIZE];
-extern void MX_USART3_UART_Init(void);
 
-#if 0
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
 
-	if(huart->Instance==USART3 )
-	{
-		//HAL_GPIO_WritePin(UART_SEL_GPIO_Port, UART_SEL_Pin, GPIO_PIN_RESET);
-		//HAL_UART_Abort(&huart3);
-		//HAL_UART_DeInit(&huart3);
-		//MX_USART3_UART_Init();
-		///if(g_GpsWorkEnable)
-
-		//memset(g_Uart3Buf,0x00,UART3_RX_BUF_SIZE);
-		//huart3.RxXferCount=UART3_RX_BUF_SIZE;
-		//huart3.pRxBuffPtr=g_Uart3Buf; 
-		{
-			//HAL_NVIC_DisableIRQ(USART3_IRQn);
-			if(g_GpsWorkEnable)
-				HAL_GPIO_WritePin(UART_SEL_GPIO_Port, UART_SEL_Pin, GPIO_PIN_SET);
-			else
-				HAL_GPIO_WritePin(UART_SEL_GPIO_Port, UART_SEL_Pin, GPIO_PIN_RESET);
-			
-			HAL_UART_Abort(&huart3);
-			HAL_UART_DeInit(&huart3);
-
-			/* USER CODE END USART3_Init 1 */
-		   huart3.Instance = USART3;
-		   huart3.Init.BaudRate = 38400;
-		   huart3.Init.WordLength = UART_WORDLENGTH_8B;
-		   huart3.Init.StopBits = UART_STOPBITS_1;
-		   huart3.Init.Parity = UART_PARITY_NONE;
-		   huart3.Init.Mode = UART_MODE_TX_RX;
-		   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-		   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-
-			if (HAL_UART_Init(&huart3) != HAL_OK)
-			{
-			  Error_Handler();
-			}
-
-			HAL_UART_Receive_IT(&huart3,(uint8_t*)g_Uart3Buf,UART3_RX_BUF_SIZE);
-
-			//TimerSet(TIMER_GPS_SAMPLE,GPS_SAMPLE_TIME);
-			
-
-			//g_GpsWorkEnable=FALSE;
-			return ;
-			
-			}
-		
-	//	HAL_NVIC_DisableIRQ(USART3_IRQn);	
-		#ifdef GPS_SUPPORT
-		GpsInit();
-		#endif
-
-		HAL_UART_Receive_IT(&huart3,(uint8_t*)g_Uart3Buf,UART3_RX_BUF_SIZE);
-
-		//TimerSet(TIMER_GPS_SAMPLE,GPS_SAMPLE_TIME/5u);
-
-		//TimerSet(TIMER_GPS_SAMPLE,GPS_SAMPLE_TIME);
-		}
-}
-
-#endif
 uint16_t  GetAsciiValueLen(uint8_t *str,uint8_t end_tag)
 {
 	uint16_t ret=0,i=0,j=0;//,len=0;
@@ -155,96 +91,23 @@ double StrToDouble(uint8_t *str)
 void GpsInit(void)
 {
 	
-	//g_GpsWorkEnable=TRUE;
-
-	#if 0
-
-	HAL_UART_Abort(&huart3);
-
-	HAL_UART_DeInit(&huart3);
-
-   /* USER CODE END USART3_Init 1 */
-   huart3.Instance = USART3;
-   huart3.Init.BaudRate = 9600;
-   huart3.Init.WordLength = UART_WORDLENGTH_8B;
-   huart3.Init.StopBits = UART_STOPBITS_1;
-   huart3.Init.Parity = UART_PARITY_NONE;
-   huart3.Init.Mode = UART_MODE_TX_RX;
-   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-
-	if (HAL_UART_Init(&huart3) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-	#endif
-	huart4.pRxBuffPtr=g_UartGpsBuf;
+	huart4.pRxBuffPtr=(uint8_t*)g_UartGpsBuf;
 	
 	huart4.RxXferCount=0;
 	huart4.RxXferSize=UART4_RX_BUF_SIZE;
 
-	HAL_GPIO_WritePin(UART_SEL_GPIO_Port, UART_SEL_Pin, GPIO_PIN_SET);
-
 	
-}
-
-
-uint8_t GpsOccupyUart3(void)
-{
-	return g_GpsWorkEnable;
-}
-
-void GpsUart3Switch(void)
-{
-#if 0
-	if(TimerGetEventState(TIMER_GPS_SAMPLE))
-	{
-		TimerEventClear(TIMER_GPS_SAMPLE);
-
-		if(g_GpsWorkEnable)
-		{
-			//HAL_NVIC_DisableIRQ(USART3_IRQn);
-			HAL_GPIO_WritePin(UART_SEL_GPIO_Port, UART_SEL_Pin, GPIO_PIN_RESET);
-			/*HAL_UART_Abort(&huart3);
-			HAL_UART_DeInit(&huart3);
-			MX_USART3_UART_Init();*/
-
-			memset((uint8_t*)g_Uart3Buf,0x00,UART3_RX_BUF_SIZE);
-		   	huart3.RxXferCount=UART3_RX_BUF_SIZE;
-			huart3.pRxBuffPtr=(uint8_t*)g_Uart3Buf; 
-
-			HAL_UART_Receive_IT(&huart3,(uint8_t*)g_Uart3Buf,UART3_RX_BUF_SIZE);
-
-			TimerSet(TIMER_GPS_SAMPLE,GPS_SAMPLE_TIME);
-			
-
-			g_GpsWorkEnable=FALSE;
-			return ;
-			
-			}
-		
-	//	HAL_NVIC_DisableIRQ(USART3_IRQn);
-	    g_GpsWorkEnable=TRUE;
-		
-		GpsInit();
-		memset((uint8_t*)g_Uart3Buf,0x00,UART3_RX_BUF_SIZE);
-		huart3.RxXferCount=UART3_RX_BUF_SIZE;
-	    huart3.pRxBuffPtr=(uint8_t*)g_Uart3Buf; 
-
-		HAL_UART_Receive_IT(&huart3,(uint8_t*)g_Uart3Buf,UART3_RX_BUF_SIZE);
-
-		TimerSet(TIMER_GPS_SAMPLE,GPS_SAMPLE_TIME/5u);
-		
-		}
-	#endif
 
 }
+
+
 //RTC_TimeTypeDef g_gpstime;
 //RTC_DateTypeDef g_gpssdate;
 
-void GpsProc(uint8_t* gpsbuff)
+void GpsProc(void)
 {
 	uint8_t value_len=0;
+	uint8_t* gpsbuff=(uint8_t*)g_UartGpsBuf;
 
 	uint8_t *p=NULL,*endmark=NULL;//,value_len=0;
 
@@ -260,7 +123,7 @@ void GpsProc(uint8_t* gpsbuff)
 	{
 	
 		{
-				p=mStrStr(gpsbuff,"$GNRMC",UART4_RX_BUF_SIZE-(gpsbuff-p_buff_addr));
+				p=mStrStr(gpsbuff,"$GNRMC",UART4_RX_BUF_SIZE/*-(gpsbuff-p_buff_addr)*/);
 				endmark=mStrStr(p,"\r\n",strlen((char*)p));
 
 				if(p!=NULL&&endmark!=NULL)
@@ -339,7 +202,7 @@ void GpsProc(uint8_t* gpsbuff)
 
 			p=NULL;
 			
-			p=mStrStr(gpsbuff,"GNGLL",UART4_RX_BUF_SIZE-(gpsbuff-p_buff_addr));
+			p=mStrStr(gpsbuff,"GNGLL",UART4_RX_BUF_SIZE/*-(gpsbuff-p_buff_addr)*/);
 			
 			if(p!=NULL)
 			{

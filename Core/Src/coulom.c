@@ -203,7 +203,7 @@ void CoulomInit(void)
 {
 	memset((uint8_t*)g_Uart485Buf,0x00,UART3_RX_BUF_SIZE);
 
-	huart3.pRxBuffPtr=g_Uart485Buf;
+	huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf;
 	huart3.RxXferCount=0;
 	huart3.RxXferSize=UART3_RX_BUF_SIZE;
 	//HAL_UART_Receive_IT(&huart1,(uint8_t*)g_Uart1Buf,UART1_RX_BUF_SIZE);
@@ -232,7 +232,7 @@ void CoulomSend( uint8_t * buffer,uint16_t size)
 	HAL_Delay(10);
 	HAL_UART_Transmit(&huart1,(uint8_t *)buffer,size,size*20);*/
 
-	huart3.pRxBuffPtr=g_Uart485Buf;
+	huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf;
 	huart3.RxXferCount=0;
 	huart3.RxXferSize=UART3_RX_BUF_SIZE;
 

@@ -399,7 +399,7 @@ void TimerPumpCallback(TIMER_TypeDef *p)
 	AdcDetectEnable();
 	#endif
 	#ifdef BLE_ENABLE
-	p->count=150;
+	p->count=300;
 	BleComEnable();
 	#endif
 }

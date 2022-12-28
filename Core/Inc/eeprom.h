@@ -41,7 +41,8 @@ typedef struct
 
 #define FLASH_START_ADDR   (uint32_t)0x8000000
 
-#define PAGE_SIZE (uint32_t)1024
+#define PAGE_SIZE (uint32_t)2048
+#define FMC_PAGE_SIZE (uint32_t)2048
 
 #define EEP_START_ADDR  (uint32_t)1024* (uint32_t)(63)
 void EEpInit(void);

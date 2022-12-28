@@ -41,7 +41,32 @@ typedef enum
 	AT_CMD_CIPSEND_DATA,
 	AT_CMD_SAPBR,
 	AT_CMD_CLBSCFG,
-	AT_CMD_CLBS
+	AT_CMD_CLBS,
+	#ifdef MODULE_4G
+	AT_CMD_COPS_Q,
+	AT_CMD_COPS,
+	AT_CMD_CGREG,
+	AT_CMD_CPSI,
+	AT_CMD_CGDCOUNT,
+	AT_CMD_CGACT,
+	AT_CMD_CMQTTSTART,
+	AT_CMD_CMQTTACCQ,
+	AT_CMD_CMQTTCONNECT,
+	AT_CMD_CMQTTTOPIC,
+	AT_CMD_CMQTTPAYLOAD,
+	AT_CMD_CMQTTPUB,
+	AT_CMD_CMQTTSUB,
+	AT_CMD_CMQTTSUBTOPIC,
+	AT_CMD_CMQTTUNSUB,
+	AT_CMD_CMQTTUNSUBTOPIC,
+	AT_CMD_CMQTTDISC,
+	AT_CMD_CMQTTSTOP,
+	AT_CMD_CGPSINFOR,
+	AT_CMD_CGNSSPWR,
+	AT_CMD_SIMSWITCH,
+	AT_CMD_DUALSIM,
+	#endif
+	AT_CMD_MAX_COUNT
 
 }AT_CMD_DEF;
 
@@ -117,6 +142,29 @@ void AtCmdPhoneNoParse(uint8_t*str,uint8_t*tag);
 void AtSetTopicId(uint8_t * ext_topic);
 void AtSetSubscribeId(void);
 void AtCmdCipSendOk(uint8_t * buffer);
+
+#ifdef MODULE_4G
+
+void AtCmdCgdcontSend(uint8_t *buffer);
+void AtCmdCgactSend(uint8_t *buffer);
+void AtCmdMqttAccqSend(uint8_t *buffer);
+void AtCmdMqttConnectSend(uint8_t *buffer);
+void AtCmdMqttTopicSend(uint8_t *buffer);
+void AtCmdMqttTopicAck(uint8_t *buffer);
+void AtCmdMqttSubSend(uint8_t *buffer);
+void AtCmdMqttSubAck(uint8_t *buffer);
+void AtCmdMqttSubtopicSend(uint8_t *buffer);
+void AtCmdMqttSubtopicAck(uint8_t *buffer);
+void AtCmdMqttPubSend(uint8_t *buffer);
+void AtCmdMqttUnSubSend(uint8_t *buffer);
+void AtCmdMqttUnSubAck(uint8_t *buffer);
+void AtCmdMqttPayloadSend(uint8_t *buffer);
+void AtCmdMqttPayloadAck(uint8_t *buffer);
+#endif
+
+
+
+
 
 #endif
 

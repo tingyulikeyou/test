@@ -239,7 +239,7 @@ void PumpSend(const uint8_t * buffer,uint16_t size)
 	memset((uint8_t*)g_Uart485Buf,0x00,UART485_RX_BUF_SIZE);
 	huart3.RxXferSize=UART485_RX_BUF_SIZE;
 	huart3.RxXferCount=0;
-	huart3.pRxBuffPtr=g_Uart485Buf;
+	huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf;
 	//HAL_UART_Receive_IT(&huart1,(uint8_t*)g_Uart485Buf,UART485_RX_BUF_SIZE);
 	HAL_Delay(5);
 	//HAL_UART_Transmit(&huart1,(uint8_t *)buffer,size,size*10);

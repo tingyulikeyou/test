@@ -152,7 +152,7 @@ void CampInit(void)
 	   memset((uint8_t*)g_Uart485Buf,0x00,UART3_RX_BUF_SIZE);
 	   //HAL_UART_Receive_IT(&huart1,(uint8_t*)g_Uart1Buf,UART1_RX_BUF_SIZE);
 	   huart3.RxXferSize=UART3_RX_BUF_SIZE;
-	   huart3.pRxBuffPtr=g_Uart485Buf;
+	   huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf;
 }
  
 
@@ -572,7 +572,7 @@ uint8_t CampTokenState(void)
 			 memset((uint8_t*)g_Uart485Buf,0x00,UART485_RX_BUF_SIZE);
 		   	 huart3.RxXferSize=UART_DI_RX_BUF_SIZE;
 			 huart3.RxXferCount=0;
-			 huart3.pRxBuffPtr=g_Uart485Buf; 
+			 huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf; 
 
 			}
 
@@ -622,7 +622,7 @@ void CampGetTask(void)
 			 memset((uint8_t*)g_Uart485Buf,0x00,UART3_RX_BUF_SIZE);
 		   	 huart3.RxXferSize=UART3_RX_BUF_SIZE;
 			 huart3.RxXferCount=0;
-			 huart3.pRxBuffPtr=g_Uart485Buf; 
+			 huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf; 
 
 			}
 

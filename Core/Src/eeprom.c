@@ -284,7 +284,7 @@ void EEpReadPage(uint32_t PageAddress,uint32_t size,uint8_t* buffer)
     
     /* erase the flash pages */
    // for(erase_counter = 0; erase_counter < page_num; erase_counter++){
-       // fmc_page_erase(FMC_WRITE_START_ADDR + (FMC_PAGE_SIZE * erase_counter));
+        fmc_page_erase(PageAddress /*+ (FMC_PAGE_SIZE * erase_counter)*/);
         fmc_flag_clear(FMC_FLAG_BANK0_END);
         fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
         fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
@@ -312,6 +312,9 @@ void EEpReadPage(uint32_t PageAddress,uint32_t size,uint8_t* buffer)
         fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
         fmc_flag_clear(FMC_FLAG_BANK0_PGERR); 
 		}
+
+	 /* lock the main FMC after the erase operation */
+    fmc_lock();
 
 	return TRUE;
 }

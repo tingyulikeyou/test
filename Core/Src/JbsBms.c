@@ -69,7 +69,7 @@ void JbsBmsInit(void)
 		
 		if(PaygGetPayState()||PaygGetFreeState())
 		{	//HAL_UART_Transmit(&huart1,g_jbdCmd_Factorymode,9,200);
-			Jbd485Send(g_jbdCmd_Factorymode,900);
+			Jbd485Send(g_jbdCmd_Factorymode,9);
 			HAL_Delay(100);
 
 			if(PaygGetFreeState())

@@ -33,12 +33,14 @@ const uint8_t g_MqttSubFixedPath[]="cmd/V01/GPRSV2/";
 #define SMS_INDEX_SIZE 14
 #define SMS_REPLY_SIZE 128
 #define PHONE_NO_SIZE 20
+#define CELL_ID_SIZE 24
 
 
 static uint8_t g_SmsIndex[SMS_INDEX_SIZE];
 static uint8_t  g_SmsReply[SMS_REPLY_SIZE];
 uint8_t  g_PhoneNo[PHONE_NO_SIZE];
-
+uint8_t  g_CellID[CELL_ID_SIZE];
+uint8_t g_GsmExist=0;
 
 
  char message_start[47]={
@@ -94,7 +96,7 @@ extern uint8_t g_NetConnect_State;
 extern SYS_STATE_CODE_TypeDef  g_sysStateCode;
 
 
-const AT_DEAL_TypeDef  g_atcmd_deal[]=
+const AT_DEAL_TypeDef  g_atcmd_deal[AT_CMD_MAX_COUNT]=
 {
 	{AT_CMD_NONE,NULL,NULL,NULL,NULL},
 	{AT_CMD_WKUP,"START SIM800C \r\n","OK",AtCmdSend,NULL},
@@ -123,6 +125,30 @@ const AT_DEAL_TypeDef  g_atcmd_deal[]=
 	{AT_CMD_SAPBR,"AT+SAPBR=1,1\r\n","OK",AtCmdSend,NULL},
 	{AT_CMD_CLBSCFG,"AT+CLBSCFG=0,3\r\n","OK",AtCmdSend,NULL},
 	{AT_CMD_CLBS,"AT+CLBS=1,1\r\n","OK",AtCmdSend,NULL},
+	#ifdef MODULE_4G
+	{AT_CMD_COPS_Q,"AT+COPS?\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_COPS,"AT+COPS=0,2\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CGREG,"AT+CGREG?\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CPSI,"AT+CPSI?\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CGDCOUNT,"AT+CGDCOUNT\r\n","OK",AtCmdCgdcontSend,NULL},
+	{AT_CMD_CGACT,"AT+CGACT\r\n","OK",AtCmdCgactSend,NULL},
+	{AT_CMD_CMQTTSTART,"AT+CMQTTSTART\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CMQTTACCQ,"AT+CMQTTACCQ\r\n","OK",AtCmdMqttAccqSend,NULL},
+	{AT_CMD_CMQTTCONNECT,"AT+CMQTTCONNECT\r\n","OK",AtCmdMqttConnectSend,NULL},
+	{AT_CMD_CMQTTTOPIC,"AT+CMQTTTOPIC\r\n",">",AtCmdMqttTopicSend,AtCmdMqttTopicAck},
+	{AT_CMD_CMQTTPAYLOAD,"AT+CMQTTPAYLOAD\r\n",">",AtCmdMqttPayloadSend,AtCmdMqttPayloadAck},
+	{AT_CMD_CMQTTPUB,"AT+CMQTTPUB\r\n","OK",AtCmdMqttPubSend,NULL},
+	{AT_CMD_CMQTTSUB,"AT+CMQTTSUB\r\n",">",AtCmdMqttSubSend,AtCmdMqttSubAck},
+	{AT_CMD_CMQTTSUBTOPIC,"AT+CMQTTSUBTOPIC\r\n",">",AtCmdMqttSubtopicSend,AtCmdMqttSubtopicAck},
+	{AT_CMD_CMQTTUNSUB,"AT+CMQTTUNSUB\r\n",">",AtCmdMqttUnSubSend,AtCmdMqttUnSubAck},
+	{AT_CMD_CMQTTUNSUBTOPIC,"AT+CMQTTUNSUBTOPIC\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CMQTTDISC,"AT+CMQTTDISC=0,120\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CMQTTSTOP,"AT+CMQTTSTOP\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CGPSINFOR,"AT+CGPSINFO=?\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_CGNSSPWR,"AT+CGNSSPWR=1\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_SIMSWITCH,"AT+SWITCHSIM=?\r\n","OK",AtCmdSend,NULL},
+	{AT_CMD_DUALSIM,"AT+DUALSIM?\r\n","OK",AtCmdSend,NULL},
+	#endif
 };
 
 const AT_PARSE_TypeDef  g_attag_parse[]= 
@@ -238,12 +264,18 @@ void AtCmdSend(uint8_t * buffer)
 
   //   HAL_UART_Transmit(&huart2,buffer,size,size*20);
     Uart2Send(buffer,size);
+	 #ifdef DEBUG_AT_LOG
+	 HAL_UART_Transmit(&huart3,buffer,size,1000);
+     #endif
 }
 
 void AtCmdLenSend(uint8_t * buffer,uint16_t size)
 {
    //  HAL_UART_Transmit(&huart2,buffer,size,size*20);
    Uart2Send(buffer,size);
+	 #ifdef DEBUG_AT_LOG
+	 HAL_UART_Transmit(&huart3,buffer,size,1000);
+     #endif
 }
 
 void AtCmdCsttSend(uint8_t * buffer)
@@ -278,6 +310,168 @@ void AtCmdCmgrSend(uint8_t * buffer)
 
 	AtCmdSend(temp);
 }
+#ifdef MODULE_4G
+
+void AtCmdCgdcontSend(uint8_t *buffer)
+{
+	uint8_t temp[64]={0};
+
+	memset(temp,0x00,64);
+	
+	sprintf((char*)temp,"AT+CGDCONT=1,\"IP\",\"%s\"\r\n",g_UserSet.NetInfor.apn);
+
+	AtCmdSend(temp);
+}
+
+
+void AtCmdCgactSend(uint8_t *buffer)
+{
+	uint8_t temp[64]={0};
+
+	memset(temp,0x00,64);
+	
+	sprintf((char*)temp,"AT+CGACT=1,%d\r\n",1);
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttAccqSend(uint8_t *buffer)
+{
+	uint8_t temp[64]={0};
+
+	memset(temp,0x00,64);
+	
+	sprintf((char*)temp,"AT+CMQTTACCQ=%d,\"%s\"\r\n",0,"testmqtt1");
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttConnectSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTCONNECT=%d,\"tcp://%s:%d\",7200,1,,\r\n",0,"mqtt-2.omnivoltaic.com",1883);
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttTopicSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTTOPIC=%d,%d\r\n",0,strlen(MQTT_topic_ppid));
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttTopicAck(uint8_t *buffer)
+{
+	AtCmdSend((uint8_t*)MQTT_topic_ppid);
+	AtCmdSend("\r\n");
+}
+
+void AtCmdMqttSubSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTSUB=%d,%d,1\r\n",0,strlen(MQTT_topic_ppid_Subscribe));
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttSubAck(uint8_t *buffer)
+{
+
+	AtCmdSend((uint8_t*)MQTT_topic_ppid_Subscribe);
+	AtCmdSend("\r\n");
+}
+
+void AtCmdMqttSubtopicSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTSUBTOPIC=%d,%d,1\r\n",0,strlen(MQTT_topic_ppid_Subscribe));
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttSubtopicAck(uint8_t *buffer)
+{
+
+	AtCmdSend((uint8_t*)MQTT_topic_ppid_Subscribe);
+	AtCmdSend("\r\n");
+}
+
+
+void AtCmdMqttPubSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+	uint8_t *json;
+	
+	memset(temp,0x00,128);
+
+	json=GattGetJsonBuff();
+	
+	sprintf((char*)temp,"AT+CMQTTPUB=0,1,%d\r\n",80);
+
+	AtCmdSend(temp);
+}
+
+
+void AtCmdMqttUnSubSend(uint8_t *buffer)
+{
+	uint8_t temp[128]={0};
+
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTUNSUB=%d,%d,0\r\n",0,strlen(MQTT_topic_ppid_Subscribe));
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttUnSubAck(uint8_t *buffer)
+{
+
+	AtCmdSend((uint8_t*)MQTT_topic_ppid_Subscribe);
+	AtCmdSend("\r\n");
+}
+
+
+void AtCmdMqttPayloadSend(uint8_t *buffer)
+{
+	uint8_t *json;
+	uint8_t temp[128]={0};
+
+	json=GattGetJsonBuff();
+	memset(temp,0x00,128);
+	
+	sprintf((char*)temp,"AT+CMQTTPAYLOAD=%d,%d\r\n",0,strlen((char*)json));
+
+	AtCmdSend(temp);
+}
+
+void AtCmdMqttPayloadAck(uint8_t *buffer)
+{
+	uint8_t *json;
+
+	json=GattGetJsonBuff();
+
+	AtCmdSend(json);
+
+	AtCmdSend("\r\n");
+}
+
+#endif
+
+
 
 void AtCmdCpmsAck(uint8_t * buffer)
 {
@@ -622,7 +816,7 @@ void AtCmdMerge(uint8_t cmd)
         g_RxGsmParseSize=0;	
 
 	
-	if(p->send!=NULL&&p->cmd!=NULL&&cmd<=AT_CMD_CLBS)
+	if(p->send!=NULL&&p->cmd!=NULL&&cmd<AT_CMD_MAX_COUNT)
 		p->send(p->cmdstr);
 }
 
@@ -1069,11 +1263,108 @@ void AtCmdPaser(uint8_t *buffer,uint8_t cmd)
 	uint16_t tempU16;
 	int16_t tempInt16;
 
-	if(cmd<=AT_CMD_CLBS)
+	if(cmd<AT_CMD_MAX_COUNT)
 		pdeal=(AT_DEAL_TypeDef*)&g_atcmd_deal[cmd];
 
 	//if(pdeal[cmd].senddeal!=NULL)
 	//	pdeal[cmd].ackdeal(pdeal[cmd].ackstr);
+
+	#ifdef MODULE_4G
+
+	if(strstr(str,"ERROR")!=NULL)
+	{
+		if(g_Mqtt_State>=MQTT_STATE_MQTTSTART)
+		{
+			//AtCmdMerge(AT_CMD_AT);	
+			//g_Mqtt_State=MQTT_STATE_MQTTCONNECT;
+			HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_RESET);
+			HAL_Delay(600);
+			MqttInit();
+			}
+		}
+	
+	if(strstr(str,"+CMQTTCONNLOST")!=NULL)
+	{
+		if(g_Mqtt_State>=MQTT_STATE_MQTTSTART)
+		{
+			AtCmdMerge(AT_CMD_AT);	
+			g_Mqtt_State=MQTT_STATE_MQTTCONNECT;
+			//HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_RESET);
+			//HAL_Delay(600);
+			//MqttInit();
+			}
+		}
+
+	 if(strstr(str,"*ATREADY: 1")!=NULL)  //+CREG: 0,5
+	 {
+		AtCmdMerge(AT_CMD_CSQ);
+		g_Mqtt_State=MQTT_STATE_CSQ;	
+	 	}
+
+	 
+	 if(strstr(str,"+CREG:")!=NULL)  //+CREG: 0,5
+	 {
+	 	p=strstr(str,"+CREG:");
+
+		//if(p[9]=='1'||p[9]=='5')
+		//	g_Mqtt_State=MQTT_STATE_CGREG;
+			
+	 	}
+
+    if(strstr(str,"+CPSI:")!=NULL)
+	{
+
+		if(strstr(str,"NO SERVICE")==NULL)
+		{
+			//	AtCmdSend("AT+SWITCHSIM=?\r\n");
+			/*if(strstr(str,"LTE")!=NULL)
+			{
+				g_GsmExist=FALSE;
+				}
+			else
+			{
+				g_GsmExist=TRUE;
+				}*/
+			
+			if(g_GsmExist)
+				g_Mqtt_State=MQTT_STATE_CONNECT_CSQ;//MQTT_STATE_CGDCONT;
+			else
+				g_Mqtt_State=MQTT_STATE_MQTTSTART;
+			}
+
+		if(strstr(str,"Online")!=NULL)
+		{
+			}
+		
+		
+		p=strstr(str,"+CPSI:");
+		p+=6;
+
+		for(i=0;i<5;i++)
+		{
+			len_value=AtCmdGetValueLen(p,',');
+			p+=len_value+1;
+			
+			}
+		len_value=AtCmdGetValueLen(p,',');	
+
+		if(len_value<CELL_ID_SIZE)
+		{  
+			memset(g_CellID,0x00,CELL_ID_SIZE);
+			memcpy(g_CellID,p,len_value);
+			}
+		
+		}
+
+		if(strstr(str,"+CPIN:")!=NULL)
+		{
+			if(strstr(str,"READY")!=NULL)
+				GmsSetSimcardState(TRUE);
+			else 
+				GmsSetSimcardState(FALSE);
+			}
+	
+	#endif
 
 
 	if(strstr(str,"+CMTI")!=NULL)
@@ -1661,7 +1952,7 @@ void AtCmdPaser(uint8_t *buffer,uint8_t cmd)
 			 {
 			 	tempInt16=atoi(p+6);
 
-				if(tempInt16>0&&tempInt16<720)
+				if(tempInt16>10&&tempInt16<720)
 					g_UserSet.ramt=tempInt16;
 
 				memset(tempBuff,0x00,128);
@@ -2123,6 +2414,9 @@ void AtCmdProc(void)
 			
 			AtCmdPaser(&g_GsmRbuffer[g_RxGsmParsePos],g_AtCmdState);
 			
+		    #ifdef DEBUG_AT_LOG
+			HAL_UART_Transmit(&huart1,&g_GsmRbuffer[g_RxGsmParsePos],strlen((char*)&g_GsmRbuffer[g_RxGsmParsePos]),1000);
+			#endif
 			g_RxGsmParsePos=i+1;
 			 
 			}
