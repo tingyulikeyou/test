@@ -21,6 +21,7 @@ typedef struct
 
 
 void IapAckUart1(uint8_t sub ,uint16_t data);
+void IapDetect(uint8_t* buffer,uint16_t* size);
 
 #endif
 

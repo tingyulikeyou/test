@@ -4,12 +4,21 @@
 
 #define RAML_SIZE   20
 
+#ifdef ABACUSLEDER_SUPPORT
+#define MAX_ABACUS_NUMBER  8
+
+#define ABACUSLEDER_START_ADDR  0x400
+#define ABACUSLEDED_SIZE   3*1024u	
+#endif
+
+
 typedef struct
 {
 
 	PAYG_TypeDef  Payg;  //104
 	NET_INFOR_TypeDef NetInfor;  //152
 	CAMP_FREQ_TypeDef CampFreq;//16
+	NET_INFOR_TypeDef NetInforFactory;
 	uint8_t reportt_auto;// 0,manu,1 auto
 	uint8_t ble_state;
 	uint8_t lowbat;
@@ -30,11 +39,37 @@ typedef struct
 	uint32_t raml_num;
 	uint8_t raml[RAML_SIZE][6];
 
+	
+#ifdef ABACUSLEDER_SUPPORT
+	//uint32_t abacus;
+	uint32_t abacus_num;
+	uint8_t abacuslist[MAX_ABACUS_NUMBER][6];
+#endif
+
 	uint8_t jtag;
 	uint8_t reserved[3];
 	
 	uint32_t endmark;  // 4
 }USER_SET_TypeDef;
+
+typedef struct
+{
+	uint32_t sec[60]; 
+	uint32_t min[60]; 
+	uint32_t hour[24]; 
+	uint32_t day[365];
+	uint32_t year[10];
+}ABACUS_IMAGE_TypeDef;
+
+typedef struct
+{
+	uint32_t sec_counter; 
+	uint32_t min_counter; 
+	uint32_t hour_counter; 
+	uint16_t day_counter;
+	uint16_t year_counter;
+}ABACUS_COUNTER_TypeDef;
+
 
 #define EEPROM_START_ADDR  0x801f800//FLASH_EEPROM_BASE
 #define eeprom_addr(a) ((uint32_t)(a+EEPROM_START_ADDR))
@@ -43,6 +78,14 @@ typedef struct
 
 #define PAGE_SIZE (uint32_t)2048
 #define FMC_PAGE_SIZE (uint32_t)2048
+
+#define EEP_PAGE_SIZE 32u
+
+#define ApplicationAddress    (uint32_t)0x8002000
+#define UpgradeflagAddress FLASH_START_ADDR+0xfcc0+3*64*1024
+#define BootModeflag           0x1a1a1a1a
+
+
 
 #define EEP_START_ADDR  (uint32_t)1024* (uint32_t)(63)
 void EEpInit(void);
@@ -88,6 +131,10 @@ uint32_t EEpGetRamLRptTime(void);
 uint32_t EEpGetRamLRptNum(void);
 uint8_t EEpGetJtagState(void);
 void EEpSetJtag(uint8_t jtag);
-
+#ifdef ABACUSLEDER_SUPPORT
+void RamShift(uint32_t *buf,uint16_t size);
+void AbacusLederInit(void);
+void AbacusLederProc(void);
+#endif
 #endif
 

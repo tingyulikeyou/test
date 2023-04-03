@@ -3,7 +3,7 @@
 
 #define __GPS_H__
 
-#define UART4_RX_BUF_SIZE 1024
+#define UART4_RX_BUF_SIZE 2048
 
 void GpsInit(void);
 void GpsProc(void);

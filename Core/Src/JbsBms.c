@@ -263,6 +263,10 @@ void JbsBmsTask(void)
 	
 	RxUart3Counter=huart3.RxXferCount;
 
+	#ifdef IAP_SUPPORT
+    IapDetect(g_Uart485Buf,&RxUart3Counter);
+    #endif
+
 
 	if((PaygGetPayState()||PaygGetFreeState())&&g_run_protect==FALSE)
 	{
@@ -277,7 +281,7 @@ void JbsBmsTask(void)
 		if((g_Uart485Buf[0]==0xdd)&&(g_Uart485Buf[1]==0x03||g_Uart485Buf[1]==0x04||g_Uart485Buf[1]==0x05))
 		{
 			uint8_t *p,crc,num=0,value=0,ntc=0,cmd=0;
-			uint16_t temp16=0;
+			uint16_t temp16=0,tempratrue=0;
 			int16_t *ptemp16;
 			uint32_t charge_power=0;
 			
@@ -313,12 +317,18 @@ void JbsBmsTask(void)
 							*ptemp16=(*ptemp16)*10;
 
 							GattSetBattCurrent(temp16);
+							charge_power=*ptemp16*-1*charge_power/1000/1000;
+
+							GattSetLoadPower(charge_power);
 							charge_power=0;
 							}
 						else	
 					   	{	GattSetBattCurrent(temp16*10);//BatteryCurrent  1mA
 					   		charge_power=charge_power*temp16*10/1000/1000;
+
+							GattSetLoadPower(0);
 							}
+						
 
 						if(PaygGetPayState()==FALSE&&PaygGetFreeState()==FALSE)
 						{
@@ -398,14 +408,17 @@ void JbsBmsTask(void)
 
 						p++;
 						//ntc 
+						tempratrue=*p*256+*(p+1)-2731;
+						tempratrue=tempratrue/10;
 						p+=2*ntc;
 
 						//normal cap
 
 						
 						GattSetChargePower( charge_power);//Charge_Power
+						GattSetSolarGeneration(charge_power);
 
-						GattSetBattTemp(g_bq40z50_state.Temperature[0]);
+						GattSetBattTemp(tempratrue);
 						
 							
 						break;

@@ -24,6 +24,8 @@ TIMER_TypeDef g_SysInitTimer;
 TIMER_TypeDef g_DemoTimer;
 TIMER_TypeDef g_GpsSampleTimer;
 TIMER_TypeDef g_RamLReprotTimer;
+TIMER_TypeDef g_AbacSampleTimer;
+
 
 __IO uint32_t uwTick;
 
@@ -53,6 +55,7 @@ const TIMER_LIST_TypeDef g_Timer[]=
 	{TIMER_DEMO,COUNT_SUB,&g_DemoTimer, NULL},
 	{TIMER_GPS_SAMPLE,COUNT_SUB,&g_GpsSampleTimer, NULL},
 	{TIMER_RAML_REPROT,COUNT_SUB,&g_RamLReprotTimer, TimeRamlReportCallback},
+	{TIMER_ABAC_SAMPLE,COUNT_SUB,&g_AbacSampleTimer, TimeAbacSampleCallback},
 };
 
 uint32_t HAL_GetTick(void)
@@ -218,6 +221,13 @@ void TimerInit(void)
 	g_RamLReprotTimer.period=TRUE;
 	g_RamLReprotTimer.count=EEpGetRamLRptTime();
 	g_RamLReprotTimer.event=FALSE;
+
+	g_AbacSampleTimer.enable=TRUE;
+	g_AbacSampleTimer.period=TRUE;
+	g_AbacSampleTimer.count=1000u;
+	g_AbacSampleTimer.event=FALSE;
+
+	
 
 }
 
@@ -476,6 +486,13 @@ void TimeRamlReportCallback(TIMER_TypeDef *p)
 	if(GmsNetConnectState()&&EEpGetRamLRptNum()>0)
 		MqttSetRequest(MQTT_REQ_RAML);
 }
+
+void TimeAbacSampleCallback(TIMER_TypeDef *p)
+{
+	p->count=1000u;
+
+}
+
 
 void TimeCoulomChrgeOverCallback(TIMER_TypeDef *p)
 {

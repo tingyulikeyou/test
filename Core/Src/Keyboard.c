@@ -199,6 +199,58 @@ void KeyBoardHand(void)
 	Uart5Send((uint8_t*)cmd_handcmd,6);
 }
 
+#ifdef IAP_SUPPORT
+void IapDetect(uint8_t* buffer,uint16_t* size)
+{
+	uint16_t i;
+
+	
+	for(i=0;i<*size;i++)
+	{
+		if(buffer[i]==0x5a&&buffer[i+1]==0x01)
+		{
+			if(i+10<=*size)
+			{
+				uint16_t chksum=0;
+				IAP_PACKET_Def	ack_packet;
+				
+				chksum=hi_crc16((uint8_t*)&buffer[i+4], 4);
+		
+				memcpy((uint8_t *)&ack_packet,(uint8_t *)&buffer[i],sizeof(IAP_PACKET_Def));
+				
+				if(chksum==ack_packet.chksum)
+				{
+					memset((uint8_t*)buffer,0x00,*size);
+					//RxUart5Counter=0;
+					*size=0;
+		
+					switch(ack_packet.sub)
+					{
+						case 0xf7:
+							IapAck(0xf7,0x0301);
+							//HAL_FLASH_Unlock();
+							//__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+							FlashPageErase(ApplicationAddress+PAGE_SIZE*127-0X2000);
+		
+							//HAL_FLASH_Lock();
+								
+							__disable_fault_irq(); 
+							NVIC_SystemReset();
+							break;
+						case 0xf8 :
+							IapAck(0xf8,0x0301);
+							break;
+						}
+						
+					break;
+					}
+				}
+			}
+		}
+
+}
+
+#endif
 
 void PKeybordProc(void)  //
 {
@@ -229,7 +281,7 @@ void PKeybordProc(void)  //
 	for(i=0;i<RxUart5Counter;i++)
 	{
 		#ifdef UI1K_V13_PROJECT
-		p=strstr((uint8_t*)g_Uart5Buf,"AT+COULOMCFG=1\r\n");
+		p=(uint8_t*)strstr((uint8_t*)g_Uart5Buf,"AT+COULOMCFG=1\r\n");
 		if(p!=NULL)
 			CoulomConfig();
 		#endif
@@ -262,17 +314,17 @@ void PKeybordProc(void)  //
 				if(chksum==ack_packet.chksum)
 				{
 					memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
-					RxUart3Counter=0;
+					RxUart5Counter=0;
 
 					switch(ack_packet.sub)
 					{
 						case 0xf7:
 							IapAck(0xf7,0x0301);
-							HAL_FLASH_Unlock();
-							__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
-							FlashPageErase(0x800fc00);
+							//HAL_FLASH_Unlock();
+							//__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+							FlashPageErase(ApplicationAddress+PAGE_SIZE*127-0X2000);
 
-							HAL_FLASH_Lock();
+							//HAL_FLASH_Lock();
 								
 							__disable_fault_irq(); 
 				 			NVIC_SystemReset();
@@ -325,7 +377,7 @@ void PKeybordProc(void)  //
 		
 			memset(tempBuff,0x00,128);
 
-			sprintf((char*)tempBuff,"\"OK \r\n +APN= \"%s,%s,%s\"",g_UserSet.NetInfor.apn,g_UserSet.NetInfor.apn_usename,g_UserSet.NetInfor.apn_password);
+			sprintf((char*)tempBuff,"\"OK \r\n +APN= %s,%s,%s",g_UserSet.NetInfor.apn,g_UserSet.NetInfor.apn_usename,g_UserSet.NetInfor.apn_password);
 
 			//HAL_UART_Transmit(&huart5,tempBuff,strlen((char*)tempBuff),1000);
 			Uart5Send(tempBuff,strlen((char*)tempBuff));
@@ -333,6 +385,8 @@ void PKeybordProc(void)  //
 			memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
 		   	huart5.RxXferCount=0;
 			huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+
+			EEpUpdateEnable();
 
 			}
 		p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+APN?"); //"apn,username,passowrd"
@@ -344,7 +398,7 @@ void PKeybordProc(void)  //
 			
 			memset(tempBuff,0x00,128);
 
-			sprintf((char*)tempBuff,"\"OK \r\n +APN= \"%s,%s,%s\"",g_UserSet.NetInfor.apn,g_UserSet.NetInfor.apn_usename,g_UserSet.NetInfor.apn_password);
+			sprintf((char*)tempBuff,"\"OK \r\n +APN= %s,%s,%s",g_UserSet.NetInfor.apn,g_UserSet.NetInfor.apn_usename,g_UserSet.NetInfor.apn_password);
 
 			//HAL_UART_Transmit(&huart5,tempBuff,strlen((char*)tempBuff),1000);
 
@@ -354,6 +408,146 @@ void PKeybordProc(void)  //
 		   	huart5.RxXferCount=0;
 			huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
 			}
+
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+BROKER=");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+
+				HAL_Delay(20);
+				p=p+10;
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				if(value_len>=MQTT_BROKER_LEN)
+					value_len=MQTT_BROKER_LEN;
+				memset(g_UserSet.NetInfor.mqtt_broker,0x00,MQTT_BROKER_LEN);
+				memcpy(g_UserSet.NetInfor.mqtt_broker,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				if(value_len>=MQTT_PORT_LEN)
+					value_len=MQTT_PORT_LEN;
+				memset(g_UserSet.NetInfor.mqtt_port,0x00,MQTT_PORT_LEN);
+				memcpy(g_UserSet.NetInfor.mqtt_port,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				if(value_len>=MQTT_USENAME_LEN)
+					value_len=MQTT_USENAME_LEN;
+				memset(g_UserSet.NetInfor.mqtt_usename,0x00,MQTT_USENAME_LEN);
+				memcpy(g_UserSet.NetInfor.mqtt_usename,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,'\r');
+
+				if(value_len>=MQTT_PASSWORD_LEN)
+					value_len=MQTT_PASSWORD_LEN;
+				memset(g_UserSet.NetInfor.mqtt_password,0x00,MQTT_PASSWORD_LEN);
+				memcpy(g_UserSet.NetInfor.mqtt_password,p,value_len);
+
+
+				memset(tempBuff,0x00,128);
+
+				sprintf((char*)tempBuff,"+BROKER=%s,%s,%s,%s",g_UserSet.NetInfor.mqtt_broker,g_UserSet.NetInfor.mqtt_port,g_UserSet.NetInfor.mqtt_usename,g_UserSet.NetInfor.mqtt_password);
+
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+				EEpUpdateEnable();
+				
+				}
+
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+BROKER?");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+				
+				memset(tempBuff,0x00,128);
+
+				sprintf((char*)tempBuff,"+BROKER=%s,%s,%s,%s\r\n",g_UserSet.NetInfor.mqtt_broker,g_UserSet.NetInfor.mqtt_port,g_UserSet.NetInfor.mqtt_usename,g_UserSet.NetInfor.mqtt_password);
+				
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+
+				}
+
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+FBROKER=");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+				p=p+11;
+				HAL_Delay(20);
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				
+
+				if(value_len>=MQTT_BROKER_LEN)
+					value_len=MQTT_BROKER_LEN;
+				memset(g_UserSet.NetInforFactory.mqtt_broker,0x00,MQTT_BROKER_LEN);
+				memcpy(g_UserSet.NetInforFactory.mqtt_broker,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				if(value_len>=MQTT_PORT_LEN)
+					value_len=MQTT_PORT_LEN;
+				memset(g_UserSet.NetInforFactory.mqtt_port,0x00,MQTT_PORT_LEN);
+				memcpy(g_UserSet.NetInforFactory.mqtt_port,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,',');
+
+				if(value_len>=MQTT_USENAME_LEN)
+					value_len=MQTT_USENAME_LEN;
+				memset(g_UserSet.NetInforFactory.mqtt_usename,0x00,MQTT_USENAME_LEN);
+				memcpy(g_UserSet.NetInforFactory.mqtt_usename,p,value_len);
+
+				p=p+value_len+1;
+				value_len=AtCmdGetValueLen((char*)p,'\r');
+
+				if(value_len>=MQTT_PASSWORD_LEN)
+					value_len=MQTT_PASSWORD_LEN;
+				memset(g_UserSet.NetInforFactory.mqtt_password,0x00,MQTT_PASSWORD_LEN);
+				memcpy(g_UserSet.NetInforFactory.mqtt_password,p,value_len);
+
+
+				memset(tempBuff,0x00,128);
+
+				sprintf((char*)tempBuff,"+FBROKER=%s,%s,%s,%s",g_UserSet.NetInforFactory.mqtt_broker,g_UserSet.NetInforFactory.mqtt_port,g_UserSet.NetInforFactory.mqtt_usename,g_UserSet.NetInforFactory.mqtt_password);
+
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+				EEpUpdateEnable();
+				
+				}
+
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+FBROKER?");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+				
+				memset(tempBuff,0x00,128);
+
+				sprintf((char*)tempBuff,"+FBROKER=%s,%s,%s,%s\r\n",g_UserSet.NetInforFactory.mqtt_broker,g_UserSet.NetInforFactory.mqtt_port,g_UserSet.NetInforFactory.mqtt_usename,g_UserSet.NetInforFactory.mqtt_password);
+				
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+
+				//EEpUpdateEnable();
+				}
 		
 		
 		if((g_Uart5Buf[i]==0xc5&&g_Uart5Buf[i+1]==0x6a)&&g_Uart5Buf[i+2]==0x29)

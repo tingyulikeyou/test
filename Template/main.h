@@ -73,9 +73,25 @@ OF SUCH DAMAGE.
 #define GPS_SUPPORT
 #define E_SIM_SUPPORT 
 #define ROLL_SWITCH
+#define MODULE_4G
+
+#define ABACUSLEDER_SUPPORT
+
+#define DEBUG_AT_LOG
 
 //#define DUBUG_LOG 
 //#define PUMP_TEST
+
+
+#define CAN0_USED
+//#define CAN1_USED
+
+#ifdef  CAN0_USED
+    #define CANX CAN0
+#else 
+    #define CANX CAN1
+#endif
+
 
 
 #include"gatt.h"
@@ -102,6 +118,10 @@ OF SUCH DAMAGE.
 #include "OffGrid.h"
 #include "Jbsbms.h"
 
+#include "i2c.h"
+#include "at24cxx.h"
+
+
 #ifdef GPS_SUPPORT
 #include "gps.h"
 #endif
@@ -118,30 +138,43 @@ OF SUCH DAMAGE.
 #define DS_CE_GPIO_Port GPIOC
 #define GSM_EN_Pin GPIO_PIN_0
 #define GSM_EN_GPIO_Port GPIOA
+#define GSM_RST_Pin GPIO_PIN_1
+#define GSM_RST_GPIO_Port GPIOA
+#define GSM_PWR_Pin GPIO_PIN_4
+#define GSM_PWR_GPIO_Port GPIOC
+#define CAN_INH_Pin GPIO_PIN_7
+#define CAN_INH_GPIO_Port GPIOC
+#define CAN_EN_Pin GPIO_PIN_8
+#define CAN_EN_GPIO_Port GPIOC
+#define GPS_PWR_Pin GPIO_PIN_15
+#define GPS_PWR_GPIO_Port GPIOA
+#define BAT_PWR_Pin GPIO_PIN_8
+#define BAT_PWR_GPIO_Port GPIOA
+
 #define LCD_CS_Pin GPIO_PIN_4
 #define LCD_CS_GPIO_Port GPIOA
 #define LCD_CLK_Pin GPIO_PIN_5
 #define LCD_CLK_GPIO_Port GPIOA
-#define LCD_DAT_Pin GPIO_PIN_6
+#define LCD_DAT_Pin GPIO_PIN_7
 #define LCD_DAT_GPIO_Port GPIOA
-#define BL_CTRL_Pin GPIO_PIN_0
-#define BL_CTRL_GPIO_Port GPIOB
+#define BL_CTRL_Pin GPIO_PIN_6
+#define BL_CTRL_GPIO_Port GPIOA
 #define BLE_RESET_Pin GPIO_PIN_1
 #define BLE_RESET_GPIO_Port GPIOB
 #define BLE_CS_Pin GPIO_PIN_2
 #define BLE_CS_GPIO_Port GPIOB
-#define ENTER_KEY_Pin GPIO_PIN_12
+#define ENTER_KEY_Pin GPIO_PIN_1
 #define ENTER_KEY_GPIO_Port GPIOB
-#define SW_A_Pin GPIO_PIN_13
-#define SW_A_GPIO_Port GPIOB
+#define SW_A_Pin GPIO_PIN_5
+#define SW_A_GPIO_Port GPIOC
 //#define SW_A_EXTI_IRQn EXTI15_10_IRQn
-#define SW_B_Pin GPIO_PIN_14
+#define SW_B_Pin GPIO_PIN_0
 #define SW_B_GPIO_Port GPIOB
 //#define SW_B_EXTI_IRQn EXTI15_10_IRQn
-#define PWR_KEY_Pin GPIO_PIN_15
+#define PWR_KEY_Pin GPIO_PIN_14
 #define PWR_KEY_GPIO_Port GPIOB
-#define PWR_CTRL_Pin GPIO_PIN_8
-#define PWR_CTRL_GPIO_Port GPIOA
+#define PWR_CTRL_Pin GPIO_PIN_13
+#define PWR_CTRL_GPIO_Port GPIOB
 #define UART_SEL_Pin GPIO_PIN_11
 #define UART_SEL_GPIO_Port GPIOA
 #define KEY_ENTER_Pin GPIO_PIN_15
@@ -157,8 +190,8 @@ OF SUCH DAMAGE.
 #define LCD_DATB9_Pin GPIO_PIN_9
 #define LCD_DATB9_GPIO_Port GPIOB
 
-//#define RELAY_EN_Pin GPIO_PIN_13
-//#define RELAY_EN_GPIO_Port GPIOA
+#define RELAY_EN_Pin GPIO_PIN_1
+#define RELAY_EN_GPIO_Port GPIOA
 
 
 

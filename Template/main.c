@@ -51,6 +51,11 @@ UART_HandleTypeDef huart5;//UART
 
 
 
+FlagStatus receive_flag;
+uint8_t transmit_number = 0x0;
+can_receive_message_struct receive_message;
+can_trasnmit_message_struct transmit_message;
+
 
 /*!
     \brief      toggle the led every 500ms
@@ -60,23 +65,6 @@ UART_HandleTypeDef huart5;//UART
 */
 
 
-void led_spark(void)
-{
-    static __IO uint32_t timingdelaylocal = 0U;
-
-    if(timingdelaylocal){
-
-        if(timingdelaylocal < 500U){
-            gd_eval_led_on(LED2);
-        }else{
-            gd_eval_led_off(LED2);
-        }
-
-        timingdelaylocal--;
-    }else{
-        timingdelaylocal = 1000U;
-    }
-}
 
 /*!
     \brief      main function
@@ -85,27 +73,34 @@ void led_spark(void)
     \retval     none
 */
 
+void GpioInit(void);
+
 void Uart1Init(void);
 void Uart2Init(void);
 void Uart3Init(void);
 void Uart4Init(void);
 void Uart5Init(void);
 
+void CanInit(void);
+void ExtiInit(void);
+
+
 void UartConfig(uint32_t uart_no,uint32_t bandrate);
 
+uint8_t testi2c[256];
 int main(void)
 {
+	//uint32_t i;
+
+
+	//uint8_t testbuf[128];
     /* configure systick */
 	//SystemInit();
 
-    //systick_config();
-    /* initilize the LEDs, USART and key */
-   // gd_eval_led_init(LED2); 
-   // gd_eval_led_init(LED3); 
-   // gd_eval_led_init(LED4);
-    //gd_eval_com_init(EVAL_COM0);
-    //gd_eval_key_init(KEY_WAKEUP, KEY_MODE_GPIO);
-	//
+	GpioInit();
+
+	/* configure I2C */
+    //i2c_config();
 
 	Uart1Init(); //BLE
 	Uart2Init(); //4G
@@ -113,9 +108,15 @@ int main(void)
 	Uart4Init(); //GPS
 	Uart5Init(); //UART
 
-	
+	 /* initialize EEPROM  */
+   i2c_eeprom_init();
 
-	
+	#ifdef WDG_ENABLE
+	/* confiure FWDGT counter clock: 40KHz(IRC40K) / 64 = 0.625 KHz */
+    fwdgt_config(5*2* 500, FWDGT_PSC_DIV64);
+    /* after 1.6 seconds to generate a reset */
+    fwdgt_enable();
+	#endif
 #ifdef PUMP_PROJECT
 	 HAL_GPIO_WritePin(PWR_CTRL_GPIO_Port, PWR_CTRL_Pin, GPIO_PIN_SET);
 	 HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_RESET);  //debug
@@ -123,11 +124,27 @@ int main(void)
  #else
 	  //HAL_Delay(2000);
  #endif
+
+    CanInit();
+
+	#ifdef GPS_SUPPORT
+    GpsInit();
+	#endif
+
+	#ifdef BLE_ENABLE
+	BleUartInit();
+	#endif
+
+   	 
+	 LcdInit();
+	
 	 EEpInit();
 	
-	 LcdInit();
-	 TimerInit();
-	
+     TimerInit();
+	 systick_config();
+
+	 
+
  #ifdef BMS_309_SUPPORT
 	 bms309Init();
  #endif
@@ -155,10 +172,21 @@ int main(void)
 	 KeyBoardInit();
  #endif
 	  AdcInit();
+
+	 #ifdef ABACUSLEDER_SUPPORT
+	 AbacusLederInit();
+	 #endif
 	
  #ifdef PUMP_PROJECT
 	  PumInit();
  #endif
+ /*	for(i=0;i<128;i++)
+		testi2c[i]=i;
+    I2c_PageWrite(I2CX_SLAVE_ADDRESS7,0x00,128,testi2c);
+
+	for(i=0;i<128;i++)
+		testi2c[i]=0x00;
+ 	I2c_PageRead(I2CX_SLAVE_ADDRESS7,0x00,128,testi2c);*/
 	
 	 debug_printf("main","system reset",0);
 	
@@ -203,7 +231,7 @@ int main(void)
 	 OffGridBmsInit();
  #endif
 	
-	 
+
 	 HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_SET);
 
     
@@ -213,13 +241,47 @@ int main(void)
    // printf("\r\nCK_APB1 is %d", rcu_clock_freq_get(CK_APB1));
    // printf("\r\nCK_APB2 is %d", rcu_clock_freq_get(CK_APB2));
 
+
+
     while(1){
 				/* USER CODE END WHILE */
 	  	#ifdef WDG_ENABLE
-				HAL_IWDG_Refresh(&hiwdg);
+				//HAL_IWDG_Refresh(&hiwdg);
+		fwdgt_counter_reload();
 		#endif
+
+	//	HAL_GPIO_WritePin(GSM_EN_GPIO_Port,GSM_EN_Pin,RESET);
+	//	HAL_GPIO_WritePin(BAT_PWR_GPIO_Port,BAT_PWR_Pin,RESET);
+	//	HAL_GPIO_WritePin(GPS_PWR_GPIO_Port,GPS_PWR_Pin,RESET);
+	//	continue;
+
+		#ifdef CAN_TEST
+		HAL_Delay(1000);
+		    /* initialize transmit message */
+		can_struct_para_init(CAN_TX_MESSAGE_STRUCT, &transmit_message);
+	    transmit_message.tx_sfid = 0x300>>1;
+	    transmit_message.tx_efid = 0x00;
+	    transmit_message.tx_ft = CAN_FT_DATA;
+	    transmit_message.tx_ff = CAN_FF_STANDARD;
+	    transmit_message.tx_dlen = 8;
+		transmit_message.tx_data[0] = 0x55;
+        transmit_message.tx_data[1] = 0xAA;
+		can_message_transmit(CAN0, &transmit_message);
+
+		#endif
+		//fwdgt_counter_reload();
+
+	//	printf("test - 123 \r\n");
+		// debug_printf("main","system reset",0);
+		//Uart5Send("123 test",8);
 		
 				/* USER CODE BEGIN 3 */
+		    #ifdef BLE_ENABLE
+				 BleCmdProc();
+		    #endif
+			#ifdef GPS_SUPPORT
+				 GpsProc();
+			#endif
 				 GsmComProc();
 	     #ifdef PUMP_PROJECT
 				  AdcProc();		 
@@ -296,6 +358,10 @@ int main(void)
 	    #endif	 
 			
 				 EEpProcess();
+
+				#ifdef ABACUSLEDER_SUPPORT
+				AbacusLederProc();
+				#endif
 			
 				 if(TimerSleepState()
 	 	#ifdef CAMP_PROJECT 
@@ -420,8 +486,78 @@ int main(void)
 }
 
 
+void GpioInit(void)
+{
+	rcu_periph_clock_enable(RCU_GPIOA);
+	rcu_periph_clock_enable(RCU_GPIOB);
+	rcu_periph_clock_enable(RCU_GPIOC);
+	rcu_periph_clock_enable(RCU_GPIOD);
+	
+	gpio_init(DS_SCLK_GPIO_Port, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, DS_SCLK_Pin);
+	gpio_init(DS_IO_GPIO_Port, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, DS_IO_Pin);
+	gpio_init(DS_CE_GPIO_Port, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, DS_CE_Pin);
 
-void Uart1Init(void)
+	gpio_init(GSM_EN_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, GSM_EN_Pin);
+	gpio_init(GSM_RST_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, GSM_RST_Pin);
+	gpio_init(GSM_PWR_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, GSM_PWR_Pin);
+
+	gpio_init(CAN_INH_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, CAN_INH_Pin);
+	gpio_init(CAN_EN_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, CAN_EN_Pin);
+
+	gpio_init(GPS_PWR_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, GPS_PWR_Pin);
+	
+	gpio_init(BAT_PWR_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, BAT_PWR_Pin);
+
+
+	gpio_init(LCD_CS_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_CS_Pin);
+	gpio_init(LCD_CLK_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_CLK_Pin);
+	gpio_init(LCD_DAT_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_DAT_Pin);
+
+	gpio_init(BL_CTRL_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, BL_CTRL_Pin);
+
+	HAL_GPIO_WritePin(CAN_INH_GPIO_Port,CAN_INH_Pin,SET);
+	HAL_GPIO_WritePin(CAN_EN_GPIO_Port,CAN_EN_Pin,SET);
+
+	HAL_GPIO_WritePin(GSM_RST_GPIO_Port,GSM_RST_Pin,RESET);
+	HAL_GPIO_WritePin(GSM_PWR_GPIO_Port,GSM_PWR_Pin,SET);
+
+	gpio_init(I2C_SCL_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, I2C_SCL_PIN);
+    gpio_init(I2C_SDA_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_10MHZ, I2C_SDA_PIN);
+
+	//HAL_GPIO_WritePin(GPS_PWR_GPIO_Port, GPS_PWR_Pin, GPIO_PIN_SET);
+
+	gpio_init(PWR_KEY_GPIO_Port, GPIO_MODE_IPU, GPIO_OSPEED_10MHZ, PWR_KEY_Pin);
+	gpio_init(KEY_ENTER_GPIO_Port, GPIO_MODE_IPU, GPIO_OSPEED_10MHZ, KEY_ENTER_Pin);
+
+	gpio_init(SW_A_GPIO_Port, GPIO_MODE_IPU, GPIO_OSPEED_10MHZ, SW_A_Pin);
+	gpio_init(SW_B_GPIO_Port, GPIO_MODE_IPU, GPIO_OSPEED_10MHZ, SW_B_Pin);
+
+    gpio_init(RELAY_EN_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, RELAY_EN_Pin);
+	
+
+	ExtiInit();
+}
+
+
+void ExtiInit(void)
+{
+    /* enable the AF clock */
+    rcu_periph_clock_enable(RCU_AF);
+    /* enable and set key EXTI interrupt to the specified priority */
+    nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
+    nvic_irq_enable(EXTI0_IRQn, 2U, 2U);
+
+    /* connect key EXTI line to key GPIO pin */
+    gpio_exti_source_select(GPIO_PORT_SOURCE_GPIOB, GPIO_PIN_SOURCE_0);
+
+    /* configure key EXTI line */
+    exti_init(EXTI_0, EXTI_INTERRUPT, EXTI_TRIG_FALLING);
+    exti_interrupt_flag_clear(EXTI_0);
+}
+
+
+
+void Uart1Init(void)//BLE
 {
 	/* USART interrupt configuration */
     nvic_irq_enable(USART0_IRQn, 0, 0);
@@ -438,11 +574,11 @@ void Uart1Init(void)
     /* connect port to USARTx_Rx */
     gpio_init(GPIOA, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_10);
 
-    UartConfig(USART0,115200U);
+    UartConfig(USART0,38400U);
 
 }
 
-void Uart2Init(void)
+void Uart2Init(void)//GSM
 {
 	/* USART interrupt configuration */
     nvic_irq_enable(USART1_IRQn, 0, 0);
@@ -463,7 +599,7 @@ void Uart2Init(void)
 
 }
 
-void Uart3Init(void)
+void Uart3Init(void)  //DI   RS485
 {
 	/* USART interrupt configuration */
     nvic_irq_enable(USART2_IRQn, 0, 0);
@@ -479,11 +615,11 @@ void Uart3Init(void)
     /* connect port to USARTx_Rx */
     gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_11);
 
-    UartConfig(USART2,115200U);
+    UartConfig(USART2,9600U);
 
 }
 
-void Uart4Init(void)
+void Uart4Init(void) //GPS
 {
 	/* USART interrupt configuration */
     nvic_irq_enable(UART3_IRQn, 0, 0);
@@ -500,11 +636,11 @@ void Uart4Init(void)
     /* connect port to USARTx_Rx */
     gpio_init(GPIOC, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_11);
 
-    UartConfig(UART3,115200U);
+    UartConfig(UART3,9600u);
 
 }
 
-void Uart5Init(void)
+void Uart5Init(void) //EXT UART
 {
 	/* USART interrupt configuration */
     nvic_irq_enable(UART4_IRQn, 0, 0);
@@ -522,7 +658,7 @@ void Uart5Init(void)
     /* connect port to USARTx_Rx */
     gpio_init(GPIOD, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_2);
 
-    UartConfig(UART4,115200U);
+    UartConfig(UART4,38400U);
 
 }
 
@@ -545,7 +681,7 @@ void UartConfig(uint32_t uart_no,uint32_t bandrate)
 	usart_enable(uart_no);
 
 	/* enable USART TBE interrupt */  
-	//usart_interrupt_enable(uart_no, USART_INT_FLAG_RBNE);
+	usart_interrupt_enable(uart_no, USART_INT_FLAG_RBNE);
 
 }
 
@@ -608,13 +744,86 @@ void Uart5Send(uint8_t *buffer,uint16_t size)
 
 
 
+void CanInit(void)
+{
+		can_parameter_struct			can_parameter;
+		can_filter_parameter_struct 	can_filter;
+
+		rcu_periph_clock_enable(RCU_AF);
+		
+		can_struct_para_init(CAN_INIT_STRUCT, &can_parameter);
+		can_struct_para_init(CAN_FILTER_STRUCT, &can_filter);
+		
+		/* initialize CAN register */
+		can_deinit(CANX);
+
+		rcu_periph_clock_enable(RCU_CAN0);
+
+		gpio_init(GPIOA,GPIO_MODE_IPU,GPIO_OSPEED_50MHZ,GPIO_PIN_11);
+        gpio_init(GPIOA,GPIO_MODE_AF_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_12);
+		
+		/* initialize CAN */
+		can_parameter.time_triggered = DISABLE;
+		can_parameter.auto_bus_off_recovery = DISABLE;
+		can_parameter.auto_wake_up = DISABLE;
+		can_parameter.auto_retrans = DISABLE;
+		can_parameter.rec_fifo_overwrite = DISABLE;
+		can_parameter.trans_fifo_order = DISABLE;
+		can_parameter.working_mode = CAN_NORMAL_MODE;
+		can_parameter.resync_jump_width = CAN_BT_SJW_1TQ;
+		can_parameter.time_segment_1 = CAN_BT_BS1_5TQ;
+		can_parameter.time_segment_2 = CAN_BT_BS2_3TQ;
+		/* baudrate 1Mbps */
+		can_parameter.prescaler = 12;
+		can_init(CANX, &can_parameter);
+	
+		/* initialize filter */
+#ifdef  CAN0_USED
+		/* CAN0 filter number */
+		can_filter.filter_number = 0;
+#else
+		/* CAN1 filter number */
+		can_filter.filter_number = 15;
+#endif
+		/* initialize filter */    
+		can_filter.filter_mode = CAN_FILTERMODE_MASK;
+		can_filter.filter_bits = CAN_FILTERBITS_32BIT;
+		can_filter.filter_list_high = 0x0000;
+		can_filter.filter_list_low = 0x0000;
+		can_filter.filter_mask_high = 0x0000;
+		can_filter.filter_mask_low = 0x0000;  
+		can_filter.filter_fifo_number = CAN_FIFO0;
+		can_filter.filter_enable = ENABLE;
+		can_filter_init(&can_filter);
+
+
+    /* enable CAN receive FIFO1 not empty interrupt */
+    can_interrupt_enable(CANX, CAN_INT_RFNE0);
+    
+    /* initialize transmit message */
+   /* can_struct_para_init(CAN_TX_MESSAGE_STRUCT, &transmit_message);
+    transmit_message.tx_sfid = 0x321;
+    transmit_message.tx_efid = 0x01;
+    transmit_message.tx_ft = CAN_FT_DATA;
+    transmit_message.tx_ff = CAN_FF_STANDARD;
+    transmit_message.tx_dlen = 1;
+    printf("please press the Tamper key to transmit data!\r\n");*/
+    
+    /* initialize receive message */
+    can_struct_para_init(CAN_RX_MESSAGE_STRUCT, &receive_message);
+
+	
+	nvic_irq_enable(USBD_LP_CAN0_RX0_IRQn,0,0);
+	
+
+}
 
 
 /* retarget the C library printf function to the USART */
 int fputc(int ch, FILE *f)
 {
-    usart_data_transmit(EVAL_COM0, (uint8_t)ch);
-    while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
+    usart_data_transmit(UART4, (uint8_t)ch);
+    while(RESET == usart_flag_get(UART4, USART_FLAG_TBE));
 
     return ch;
 }

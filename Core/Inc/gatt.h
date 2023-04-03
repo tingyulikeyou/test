@@ -9,7 +9,7 @@
 #ifdef P10KW_PROJECT
 #define JSON_LEN  1024*4
 #else
-#define JSON_LEN  1024*2
+#define JSON_LEN  1024*4
 #endif
 #define NEW_GATTVERSION
 
@@ -1169,7 +1169,10 @@ uint8_t GattGetData(uint8_t list,uint8_t id,uint8_t*data);
 uint8_t GattSetData(uint8_t list,uint8_t id,uint8_t*data);
 GATT1_Def* GattGetList(void);
 
-
+#ifdef ABACUSLEDER_SUPPORT
+void GattAbacSetReprotIndex(uint8_t index);
+uint8_t* GattAbacFieldMerge(void);
+#endif
 
 #endif
 

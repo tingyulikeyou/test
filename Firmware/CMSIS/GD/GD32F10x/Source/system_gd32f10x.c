@@ -42,12 +42,16 @@ OF SUCH DAMAGE.
 #define __HXTAL           (HXTAL_VALUE)            /* high speed crystal oscillator frequency */
 #define __SYS_OSC_CLK     (__IRC8M)                /* main oscillator frequency */
 
-#define VECT_TAB_OFFSET  (uint32_t)0x00            /* vector table base offset */
 
+#ifdef IAP_SUPPORT
+#define VECT_TAB_OFFSET  (uint32_t)0x2000            /* vector table base offset */
+#else
+#define VECT_TAB_OFFSET  (uint32_t)0x00            /* vector table base offset */
+#endif
 /* select a system clock by uncommenting the following line */
 /* use IRC8M */
 //#define __SYSTEM_CLOCK_48M_PLL_IRC8M            (uint32_t)(48000000)
-#define __SYSTEM_CLOCK_72M_PLL_IRC8M            (uint32_t)(72000000)
+//#define __SYSTEM_CLOCK_72M_PLL_IRC8M            (uint32_t)(72000000)
 //#define __SYSTEM_CLOCK_108M_PLL_IRC8M           (uint32_t)(108000000)
 
 /* use HXTAL (XD series CK_HXTAL = 8M, CL series CK_HXTAL = 25M) */
@@ -58,7 +62,7 @@ OF SUCH DAMAGE.
 //#define __SYSTEM_CLOCK_56M_PLL_HXTAL            (uint32_t)(56000000)
 //#define __SYSTEM_CLOCK_72M_PLL_HXTAL            (uint32_t)(72000000)
 //#define __SYSTEM_CLOCK_96M_PLL_HXTAL            (uint32_t)(96000000)
-//#define __SYSTEM_CLOCK_108M_PLL_HXTAL           (uint32_t)(108000000)
+#define __SYSTEM_CLOCK_108M_PLL_HXTAL           (uint32_t)(108000000)
 
 #define RCU_MODIFY(__delay)     do{                                     \
                                     volatile uint32_t i;                \

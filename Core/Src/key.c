@@ -60,11 +60,11 @@ extern SYS_STATE_CODE_TypeDef  g_sysStateCode;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   /* Prevent unused argument(s) compilation warning */
-   if(GPIO_Pin==GPIO_PIN_13)
+   if(GPIO_Pin==GPIO_PIN_0)
    {
 	Delay(10);
 	
-   	if(HAL_GPIO_ReadPin(SW_B_GPIO_Port,SW_B_Pin)==GPIO_PIN_SET)
+   	if(HAL_GPIO_ReadPin(SW_A_GPIO_Port,SW_A_Pin)==GPIO_PIN_SET)
    	{
    		g_RollSwitch=ROLL_RUN_RIGHT;
    		}
@@ -72,13 +72,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		g_RollSwitch=ROLL_RUN_LEFT;
 		}
-   	}
-
-   //if(GPIO_Pin==GPIO_PIN_13)
-   {
-	 // g_KeyboardPwrEnable=TRUE;
-
-	//  TimerKbInsertSet(2*60*1000);
    	}
 
   /* NOTE : This function Should not be modified, when the callback is needed,
@@ -663,7 +656,8 @@ void KeyEventProcess(void)
 			   while(counter_delay<1000)
 			   {
 			   	#ifdef WDG_ENABLE
-			    HAL_IWDG_Refresh(&hiwdg);
+			    //HAL_IWDG_Refresh(&hiwdg);
+					 fwdgt_counter_reload();
 				#endif
 				HAL_Delay(100);
 			  	HAL_GPIO_WritePin(PWR_CTRL_GPIO_Port, PWR_CTRL_Pin, GPIO_PIN_RESET);

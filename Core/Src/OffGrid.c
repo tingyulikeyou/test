@@ -12,7 +12,7 @@ uint8_t g_OffGridRegType=OFFGRID_INPUT_REG;
 extern __IO  uint8_t g_Uart485Buf[UART485_RX_BUF_SIZE];
 
 
-extern uint16_t  RxUart1Counter;
+uint16_t  RxUart1Counter;
 extern uint16_t  RxUart1ParsePos;
 
 
@@ -45,6 +45,8 @@ void OffGridBmsInit(void)
 		EEpUpdateEnable();
    	}*/
 
+	HAL_GPIO_WritePin(RELAY_EN_GPIO_Port, RELAY_EN_Pin, GPIO_PIN_RESET);
+
 
 }
 
@@ -74,6 +76,7 @@ void OffGrid_GetHoldReg(uint16_t reg,uint16_t len)
 	memset((uint8_t*)g_Uart485Buf,0x00,UART485_RX_BUF_SIZE);
 	
     huart3.RxXferSize=UART485_RX_BUF_SIZE;
+	huart3.RxXferCount=0;
     huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf; 
 
 	OffGridBmsSend((uint8_t*)&g_offgridquery,sizeof(g_offgridquery));
@@ -107,6 +110,7 @@ void OffGrid_GetInfo(uint16_t reg,uint16_t len)
 	memset((uint8_t*)g_Uart485Buf,0x00,UART485_RX_BUF_SIZE);
 	
     huart3.RxXferSize=UART485_RX_BUF_SIZE;
+	huart3.RxXferCount=0;
     huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf; 
 	
     //HAL_UART_Transmit(&huart1,(uint8_t*)&g_offgridquery,sizeof(g_offgridquery),200);	
@@ -151,6 +155,7 @@ void OffGrid_SetReg(uint16_t reg,uint16_t state)
 	memset((uint8_t*)g_Uart485Buf,0x00,UART485_RX_BUF_SIZE);
 	
     huart3.RxXferSize=UART485_RX_BUF_SIZE;
+	huart3.RxXferCount=0;
     huart3.pRxBuffPtr=(uint8_t*)g_Uart485Buf; 
 	
   //  HAL_UART_Transmit(&huart1,(uint8_t*)&g_offgridPset,sizeof(g_offgridPset),200);	
@@ -183,13 +188,13 @@ void OffGridBmsTask(void)
 			g_OffGridUserset=1;
 
 			//if(EEpGetJtagState()==FALSE)
-				//HAL_GPIO_WritePin(RELAY_EN_GPIO_Port,RELAY_EN_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(RELAY_EN_GPIO_Port,RELAY_EN_Pin, GPIO_PIN_SET);
 			}
 		else
 		{
 			g_OffGridUserset=0;
 			//if(EEpGetJtagState()==FALSE)
-			//	HAL_GPIO_WritePin(RELAY_EN_GPIO_Port,RELAY_EN_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(RELAY_EN_GPIO_Port,RELAY_EN_Pin, GPIO_PIN_RESET);
 			}
 
 		if(g_OffGridRegType==OFFGRID_INPUT_REG)
@@ -223,13 +228,13 @@ void OffGridBmsTask(void)
 	//if(huart1.RxState==HAL_UART_STATE_READY)
 	//	HAL_UART_Receive_IT(&huart1,(uint8_t*)g_Uart485Buf,UART485_RX_BUF_SIZE);
 	
-	RxUart1Counter=huart1.RxXferCount;
+	RxUart1Counter=huart3.RxXferCount;
 
 
 
 	for(i=0;i<RxUart1Counter;i++)
 	{
-		if((g_Uart485Buf[0]==0x01)&&(g_Uart485Buf[1]==0x03))
+		if((g_Uart485Buf[i]==0x01)&&(g_Uart485Buf[i+1]==0x03)&&(g_Uart485Buf[i+2]==0x50))
 		{
 			p_reg=(uint8_t*)&g_Uart485Buf[3];
 
@@ -387,7 +392,7 @@ void OffGridBmsTask(void)
 			}
 			}
 		
-		if((g_Uart485Buf[0]==0x01)&&(g_Uart485Buf[1]==0x04)/*&&(g_Uart485Buf[2]==45)*/)
+		if((g_Uart485Buf[i]==0x01)&&(g_Uart485Buf[i+1]==0x04)&&(g_Uart485Buf[i+2]==0x50||g_Uart485Buf[i+2]==0x36))
 		{
 			p_reg=(uint8_t*)&g_Uart485Buf[3];
 

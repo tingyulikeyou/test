@@ -11,9 +11,9 @@
 
 #else
 
-#define P_Strobe(fgFlag)  HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);
-#define P_Clk(fgFlag)    HAL_GPIO_WritePin(LCD_CLK_GPIO_Port, LCD_CLK_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);
-#define P_Data(fgFlag)  HAL_GPIO_WritePin(LCD_DAT_GPIO_Port, LCD_DAT_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);
+#define P_Strobe(fgFlag)  HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);Delayus();
+#define P_Clk(fgFlag)    HAL_GPIO_WritePin(LCD_CLK_GPIO_Port, LCD_CLK_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);Delayus();
+#define P_Data(fgFlag)  HAL_GPIO_WritePin(LCD_DAT_GPIO_Port, LCD_DAT_Pin, fgFlag?GPIO_PIN_SET:GPIO_PIN_RESET);Delayus();
 #endif
 
 #define LCD_CMD               0x04

@@ -43,6 +43,7 @@ enum
 	TIMER_DEMO,
 	TIMER_GPS_SAMPLE,
 	TIMER_RAML_REPROT,
+	TIMER_ABAC_SAMPLE,
 	TIMER_COUNT
 };
 
@@ -115,6 +116,7 @@ void  TimerSet(uint8_t timer,uint32_t count);
 uint32_t HAL_GetTick(void);
 void HAL_Delay(uint32_t Delay);
 void HAL_SYSTICK_Callback(void);
+void TimeAbacSampleCallback(TIMER_TypeDef *p);
 
 
 #endif

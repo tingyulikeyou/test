@@ -45,6 +45,10 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart5;
 
+extern FlagStatus receive_flag;
+extern can_receive_message_struct receive_message;
+
+
 
 /*!
     \brief      this function handles NMI exception
@@ -66,6 +70,7 @@ void HardFault_Handler(void)
 {
     /* if Hard Fault exception occurs, go to infinite loop */
     while(1){
+
     }
 }
 
@@ -146,11 +151,10 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
-    led_spark();
+   // led_spark();
     delay_decrement();
 
-	
-	HAL_SYSTICK_Callback();
+    HAL_SYSTICK_Callback();
 }
 
 /*!
@@ -193,6 +197,8 @@ void USART1_IRQHandler(void)
 			if(huart2.RxXferCount>=huart2.RxXferSize)
 				huart2.RxXferCount=0;
 	   	}
+			else
+				usart_data_receive(USART1);
        // }
     }
     if(RESET != usart_interrupt_flag_get(USART1, USART_INT_FLAG_TBE)){
@@ -216,6 +222,8 @@ void USART2_IRQHandler(void)
 			if(huart3.RxXferCount>=huart3.RxXferSize)
 				huart3.RxXferCount=0;
 			}
+		else
+			usart_data_receive(USART2);
        // }
     }
     if(RESET != usart_interrupt_flag_get(USART2, USART_INT_FLAG_TBE)){
@@ -236,6 +244,8 @@ void UART3_IRQHandler(void)
 		if(huart4.RxXferCount>=huart4.RxXferSize)
 			huart4.RxXferCount=0;
 		}
+	 else
+	 	usart_data_receive(UART3);
     }
     if(RESET != usart_interrupt_flag_get(UART3, USART_INT_FLAG_TBE)){
         /* transmit data */
@@ -256,6 +266,8 @@ void UART4_IRQHandler(void)
 			if(huart5.RxXferCount>=huart5.RxXferSize)
 				huart5.RxXferCount=0;
 			}
+			else
+				usart_data_receive(UART4);
     }
     if(RESET != usart_interrupt_flag_get(UART4, USART_INT_FLAG_TBE)){
         /* transmit data */
@@ -263,6 +275,26 @@ void UART4_IRQHandler(void)
        // if(txcount == tx_size){
         //    usart_interrupt_disable(USART0, USART_INT_TBE);
       //  }
+    }
+}
+
+
+void USBD_LP_CAN0_RX0_IRQHandler(void)
+{
+    /* check the receive message */
+    can_message_receive(CAN0, CAN_FIFO0, &receive_message);
+    if((0x321 == receive_message.rx_sfid)&&(CAN_FF_STANDARD == receive_message.rx_ff) && (1 == receive_message.rx_dlen)){
+        receive_flag = SET;
+    }
+}
+
+
+void EXTI0_IRQHandler(void)
+{
+    if (RESET != exti_interrupt_flag_get(EXTI_0)) {
+       // gd_eval_led_toggle(LED3);
+        HAL_GPIO_EXTI_Callback(EXTI_0);
+        exti_interrupt_flag_clear(EXTI_0);
     }
 }
 

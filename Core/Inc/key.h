@@ -75,6 +75,7 @@ uint8_t GetUserUsbState(void);
 uint8_t GetDemoState(void);
 void  DemoModeClose(void);
 void  DemoModeStart(void);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 #endif
 

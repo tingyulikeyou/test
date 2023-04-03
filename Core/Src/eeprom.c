@@ -11,6 +11,9 @@ static uint32_t PageError = 0;
 
 USER_SET_TypeDef g_UserSet;
 static uint8_t g_eepupdate=0;
+
+ABACUS_COUNTER_TypeDef  g_AbacusLeder[MAX_ABACUS_NUMBER];
+
 	
 void EEpInit(void)
 {
@@ -21,11 +24,15 @@ void EEpInit(void)
 
 	if(g_UserSet.endmark!=0x01234567)
 	{
-		
+
+		if(g_UserSet.Payg.oem_id[0]==0xff)
+			memset((uint8_t*)&g_UserSet,0x00,sizeof(USER_SET_TypeDef));
+		else	
+			memset((uint8_t*)&g_UserSet.NetInfor,0x00,sizeof(USER_SET_TypeDef)-sizeof(PAYG_TypeDef));
 		
 		memset((uint8_t*)&g_UserSet.NetInfor,0x00,sizeof(NET_INFOR_TypeDef));
 		memset((uint8_t*)&g_UserSet.CampFreq,0x00,sizeof(CAMP_FREQ_TypeDef));
-
+		memset((uint8_t*)&g_UserSet.NetInforFactory,0x00,sizeof(NET_INFOR_TypeDef));
 	
 
 		//memcpy(g_UserSet.NetInfor.apn,Defualt_APN,strlen(Defualt_APN));
@@ -36,11 +43,23 @@ void EEpInit(void)
 		#endif
 		
 		
-		memcpy(g_UserSet.NetInfor.mqtt_broker,"mqtt-2.omnivoltaic.com",22);
+		/*memcpy(g_UserSet.NetInfor.mqtt_broker,"mqtt-2.omnivoltaic.com",22);
 		memcpy(g_UserSet.NetInfor.mqtt_port,"1883",4);
 		
 		memcpy(g_UserSet.CampFreq.M_frequen,"180",3);
-		memcpy(g_UserSet.CampFreq.T_frequen,"5",1);
+		memcpy(g_UserSet.CampFreq.T_frequen,"5",1);*/
+		
+		//memset((uint8_t*)&g_UserSet.NetInforFactory,0x00,sizeof(NET_INFOR_TypeDef));
+
+		memcpy(g_UserSet.NetInfor.mqtt_broker,"mqtt-client1.omnivoltaic.com",28);
+		memcpy(g_UserSet.NetInfor.mqtt_port,"18884",5);
+ 		memcpy(g_UserSet.NetInfor.mqtt_usename,"Client1",7);
+		memcpy(g_UserSet.NetInfor.mqtt_password,"3QtpFnDS",8); 
+
+		memcpy(g_UserSet.NetInforFactory.mqtt_broker,"mqtt-factory.omnivoltaic.com",28);
+		memcpy(g_UserSet.NetInforFactory.mqtt_port,"18883",5);
+		memcpy(g_UserSet.NetInforFactory.mqtt_usename,"Admin",5);
+		memcpy(g_UserSet.NetInforFactory.mqtt_password,"7xzUV@MT",8);
 
 		g_UserSet.reportt_auto=TRUE;
 		g_UserSet.ble_state=5; 
@@ -49,9 +68,17 @@ void EEpInit(void)
 		g_UserSet.heartbeat=1; 
 		g_UserSet.wakeup_cnt=0; 
 		g_UserSet.ramt=30; 
+		g_UserSet.raml_num=0; 
+
+		#ifdef ABACUSLEDER_SUPPORT
+		g_UserSet.abacus_num=0;
+		memset(g_UserSet.abacuslist,0x00,MAX_ABACUS_NUMBER*6);
+		#endif
 		g_UserSet.endmark=0x01234567;
 
-		EEpWritePage(0x0000,sizeof(USER_SET_TypeDef),(uint8_t*)&g_UserSet);
+		EEpUpdateEnable();
+
+		//EEpWritePage(0x0000,sizeof(USER_SET_TypeDef),(uint8_t*)&g_UserSet);
 		}
 
 
@@ -68,13 +95,15 @@ void EEpInit(void)
 		//memset(g_UserSet.Payg.oem_id,0x00,20);
 		//memcpy(g_UserSet.Payg.oem_id,"00AH210300000311",15);
 		
-		//memcpy(g_UserSet.Payg.oem_id,"07AH2112028888",14);
-		//memcpy(g_UserSet.Payg.oem_id,"20210712",3);
+		//memcpy(g_UserSet.Payg.oem_id,"07AH2112028888\0",15);
+		//memcpy(g_UserSet.Payg.payg_id,"20210712\0",9);
 
 		//g_UserSet.reportt_auto=1;
 
 
-		  
+		
+		//memset(g_UserSet.NetInfor.mqtt_usename,0x00,MQTT_USENAME_LEN);
+		//memset(g_UserSet.NetInfor.mqtt_password,0x00,MQTT_PASSWORD_LEN);
 }
 
 
@@ -232,10 +261,11 @@ uint8_t EEpGetJtagState(void)
 
 void EEpWritePage(uint32_t PageAddress,uint32_t size,uint8_t* buffer)
 {
-	/*uint32_t i;
+	uint32_t i=0;
+	uint32_t page=size/EEP_PAGE_SIZE;
 
 	
-	HAL_FLASH_Unlock();
+	/*HAL_FLASH_Unlock();
 
 	EraseCfg.PageAddress=EEP_START_ADDR+FLASH_START_ADDR;
 	HAL_FLASHEx_Erase(&EraseCfg, &PageError);
@@ -252,14 +282,26 @@ void EEpWritePage(uint32_t PageAddress,uint32_t size,uint8_t* buffer)
 
 
 	HAL_FLASH_Lock();*/
-	EEpWrite(PageAddress,size,buffer);
+	//EEpWrite(PageAddress,size,buffer);
+	for(i=0;i<page;i++)
+	{	
+		I2c_PageWrite(I2CX_SLAVE_ADDRESS7,PageAddress+i*EEP_PAGE_SIZE,EEP_PAGE_SIZE,&buffer[i*EEP_PAGE_SIZE]);
+
+		HAL_Delay(5);
+		}
+
+	if(size%EEP_PAGE_SIZE)
+		I2c_PageWrite(I2CX_SLAVE_ADDRESS7,PageAddress+i*EEP_PAGE_SIZE,(size%EEP_PAGE_SIZE),&buffer[i*EEP_PAGE_SIZE]);
+
+	
 }
 	
 
 void EEpReadPage(uint32_t PageAddress,uint32_t size,uint8_t* buffer)
 {
 	//FlashRead(FLASH_START_ADDR+EEP_START_ADDR+PageAddress,size/4,(uint32_t*)buffer);
-	EEpRead(PageAddress,size,buffer);
+	//EEpRead(PageAddress,size,buffer);
+	I2c_PageRead(I2CX_SLAVE_ADDRESS7,PageAddress,size,buffer);
 }
 
 
@@ -381,4 +423,242 @@ void EEpProcess(void)
 		EEpWritePage(0x0000,sizeof(USER_SET_TypeDef),(uint8_t*)&g_UserSet);
 		}
 }
+
+
+#ifdef ABACUSLEDER_SUPPORT
+ABACUS_IMAGE_TypeDef g_AbacusLeder_Image[MAX_ABACUS_NUMBER];
+uint16_t g_AbacSaveCounter=0;
+uint16_t g_AbacSaveAddr=0;
+uint16_t g_AbacTableIndex=0;
+
+
+void RamShift(uint32_t *buf,uint16_t size)
+{
+	uint16_t i=0;
+
+	for(i=0;i<size;i++)
+		buf[i]=buf[i+1];
+}
+
+void AbacusLederInit(void)
+{
+	uint8_t i=0;
+	
+
+	for(i=0;i</*g_UserSet.abacus_num*/MAX_ABACUS_NUMBER;i++)
+	{	
+		memset((uint8_t*)&g_AbacusLeder_Image[i],0x00,sizeof(ABACUS_IMAGE_TypeDef));
+		EEpReadPage(ABACUSLEDER_START_ADDR+i*ABACUSLEDED_SIZE,sizeof(ABACUS_IMAGE_TypeDef),(uint8_t*)&g_AbacusLeder_Image[i]);
+		HAL_Delay(5);
+		}
+
+	if(g_AbacusLeder_Image[0].sec[0]==0xffffffff)
+	{	memset((uint8_t*)&g_AbacusLeder_Image,0x00,MAX_ABACUS_NUMBER*sizeof(ABACUS_IMAGE_TypeDef));
+		}
+}
+
+void AbacusLederProc(void)
+{
+	uint16_t i,m,j;
+	uint32_t sum=0;
+	uint32_t value32=0;
+	uint16_t value16=0;
+
+
+	if(TimerGetEventState(TIMER_ABAC_SAMPLE))
+	{
+	    TimerEventClear(TIMER_ABAC_SAMPLE);
+
+		 if(g_UserSet.abacus_num)
+		 {	
+		 	g_AbacSaveCounter++;
+
+		 	if(g_AbacSaveCounter>=3600)//1 hour
+			 {
+				uint8_t abacbuf[EEP_PAGE_SIZE]={0};
+				uint8_t *pram=(uint8_t*)&g_AbacusLeder_Image[g_AbacTableIndex];
+
+				memset(abacbuf,0x00,EEP_PAGE_SIZE);
+				
+			 	EEpReadPage(ABACUSLEDER_START_ADDR+g_AbacTableIndex*ABACUSLEDED_SIZE+g_AbacSaveAddr,EEP_PAGE_SIZE,abacbuf);
+				pram+=g_AbacSaveAddr;
+				
+				for(i=0;i<EEP_PAGE_SIZE;i++)
+				{
+					if(abacbuf[i]!=pram[i])
+					{
+						HAL_Delay(2);
+						EEpWritePage(ABACUSLEDER_START_ADDR,EEP_PAGE_SIZE,pram);
+						break;
+						}
+					}
+
+				g_AbacSaveAddr+=EEP_PAGE_SIZE;
+
+				if(g_AbacSaveAddr>=sizeof(ABACUS_IMAGE_TypeDef))
+				{
+					g_AbacSaveAddr=0;
+					g_AbacTableIndex++;
+					
+					if(g_AbacTableIndex>=g_UserSet.abacus_num)
+					{
+						g_AbacSaveAddr=0;
+						g_AbacTableIndex=0;
+						g_AbacSaveCounter=0;
+						}
+					}
+			 	}
+		 	}
+		/* else
+		 {
+		 	g_AbacSaveAddr=0;
+			g_AbacSaveIndex=0;
+		 	}*/
+		
+		for(i=0;i<MAX_ABACUS_NUMBER&&i<g_UserSet.abacus_num;i++)
+		{
+			uint8_t list=LIST_STS,id=0,prop[8];	
+			uint8_t exit=0;
+			extern const uint8_t g_GattlistMemberNum[LIST_COUNT];
+			
+			for(list=LIST_STS;list<LIST_COUNT;list++)
+			{
+				for(id=0;id<g_GattlistMemberNum[list];id++)
+				{    
+					memset(prop,0x00,8);
+					{	
+						if(GattGetListProp(list,id,prop))
+						{
+							if(strstr((char*)g_UserSet.abacuslist[i],(char*)prop)!=NULL)
+							{
+								value32=0;
+								value16=0;
+								if(list==LIST_DTA&&id==DTA_PCKV)
+								{	GattGetData(list,id,(uint8_t*)&value32);
+									}
+								else
+								{	GattGetData(list,id,(uint8_t*)&value16);
+									value32=value16;
+									}
+							
+								exit=TRUE;
+								break;
+								}
+							}
+					
+						}
+					}
+					if(exit)
+						break;
+				}
+
+			
+			if(g_AbacusLeder[i].sec_counter>=60)
+			{
+					RamShift(g_AbacusLeder_Image[i].sec,59);
+					g_AbacusLeder_Image[i].sec[59]=value32;//g_AbacusLeder[i].sec_counter%60;
+				}
+		        else
+				{	
+					g_AbacusLeder_Image[i].sec[g_AbacusLeder[i].sec_counter%60]=value32;//g_AbacusLeder[i].sec_counter%60;
+		        	}
+
+			g_AbacusLeder[i].sec_counter++;
+			
+			if(g_AbacusLeder[i].sec_counter>0&&((g_AbacusLeder[i].sec_counter%60)==0))
+			{
+				sum=0;
+				for(m=0;m<60;m++)
+				{
+					sum+=g_AbacusLeder_Image[i].sec[m];
+					}
+
+				if(g_AbacusLeder[i].min_counter>=60)
+				{
+						RamShift(g_AbacusLeder_Image[i].min,59);
+						g_AbacusLeder_Image[i].min[59]=sum/60;
+					}
+			        else
+					{	
+						g_AbacusLeder_Image[i].min[g_AbacusLeder[i].min_counter%60]=sum/60;
+			        	}
+
+				g_AbacusLeder[i].min_counter++;
+
+				if(g_AbacusLeder[i].min_counter>0&&((g_AbacusLeder[i].min_counter%60)==0))
+				{
+					sum=0;
+					for(m=0;m<60;m++)
+					{
+						sum+=g_AbacusLeder_Image[i].min[m];
+						}
+
+					if(g_AbacusLeder[i].hour_counter>=24)
+					{
+							RamShift(g_AbacusLeder_Image[i].hour,23);
+							g_AbacusLeder_Image[i].hour[23]=sum/60;
+						}
+				        else
+						{	
+							 g_AbacusLeder_Image[i].hour[g_AbacusLeder[i].hour_counter%24]=sum/60;
+				        	}
+				   
+					g_AbacusLeder[i].hour_counter++;
+
+					if(g_AbacusLeder[i].hour_counter>0&&((g_AbacusLeder[i].hour_counter%24)==0))
+					{
+						sum=0;
+						for(m=0;m<24;m++)
+						{
+							sum+=g_AbacusLeder_Image[i].hour[m];
+							}
+
+						if(g_AbacusLeder[i].day_counter>=365)
+						{
+								RamShift(g_AbacusLeder_Image[i].day,364);
+								g_AbacusLeder_Image[i].day[364]=sum/24;
+							}
+					        else
+							{	
+								 g_AbacusLeder_Image[i].day[g_AbacusLeder[i].day_counter%365]=sum/24;
+					        	}
+
+						g_AbacusLeder[i].day_counter++;
+
+						if(g_AbacusLeder[i].day_counter>0&&((g_AbacusLeder[i].day_counter%365)==0))
+						{
+							sum=0;
+							for(m=0;m<365;m++)
+							{
+								sum+=g_AbacusLeder_Image[i].day[m];
+								}
+
+							if(g_AbacusLeder[i].year_counter>=10)
+							{
+									RamShift(g_AbacusLeder_Image[i].year,9);
+									g_AbacusLeder_Image[i].year[9]=sum/365;
+								}
+						        else
+								{	
+									 g_AbacusLeder_Image[i].year[g_AbacusLeder[i].year_counter]=sum/365;
+						        	}
+
+								 g_AbacusLeder[i].year_counter++;
+
+							
+						}
+						
+					}
+					
+					}
+
+				
+				
+				}
+			}
+
+		}
+}
+
+#endif
 

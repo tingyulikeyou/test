@@ -11,7 +11,8 @@
 
 
  
- uint8_t g_gpsRateCfg[]="$PCAS01,3*1F\r\n";
+ //uint8_t g_gpsRateCfg[]="$PCAS01,3*1F\r\n";
+ uint8_t g_gpsRateCfg[]="$PCAS01,1*1D\r\n\0";
  //$PCAS01,3*1F
 
 
@@ -48,7 +49,7 @@ uint8_t*mStrStr(uint8_t *src,uint8_t *dst,uint16_t size)
 		{
 			if(src[i+j]!=dst[j])
 				break;
-			}
+			} 
 
 		if(j==dst_len)
 			return &src[i];
@@ -97,7 +98,7 @@ void GpsInit(void)
 	huart4.RxXferSize=UART4_RX_BUF_SIZE;
 
 	
-
+	//Uart4Send(g_gpsRateCfg,strlen(g_gpsRateCfg));
 }
 
 

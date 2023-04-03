@@ -6,6 +6,7 @@
 MQTT_STATE_DEF g_Mqtt_State=MQTT_STATE_IDLE;
 SMS_STATE_DEF g_Sms_State=SMS_STATE_IDLE;
 uint8_t  g_Mqtt_Request=MQTT_REQ_NONE;
+uint8_t  g_Mqtt_ClinetConnect=0;
 
 
 uint8_t g_Mqtt_hold=FALSE;
@@ -28,6 +29,8 @@ extern TIMER_TypeDef g_AtAckTout_timer;
 extern USER_SET_TypeDef g_UserSet;
 
 extern uint8_t g_GsmExist;
+
+extern uint8_t g_mqtt_broker_index;
 
 uint8_t GmsGetSimcardState(void)
 {
@@ -144,6 +147,10 @@ void MqttProc(void)
 			case MQTT_STATE_INIT:
 				AtCmdMerge(AT_CMD_AT);
 				g_Mqtt_State=MQTT_STATE_AT;
+
+				g_Mqtt_ClinetConnect=0;
+				g_mqtt_broker_index=0;
+				
 				TimerAtTOutStart(5000U,TRUE);
 				break;
 			case MQTT_STATE_AT:
@@ -304,7 +311,7 @@ void MqttProc(void)
 					//HAL_Delay(500);
 					g_NetConnect_State=TRUE;
 					
-					if(g_UserSet.reportt_auto&&g_MqttReconnect==FALSE)
+					if(g_UserSet.reportt_auto&&g_MqttReconnect==FALSE&&g_Mqtt_ClinetConnect>=1)
 					{	
 						AtCmdMerge(AT_CMD_CMQTTTOPIC);
 						TimerAtTOutStart(5000U,TRUE);
@@ -315,7 +322,7 @@ void MqttProc(void)
 						}
 					else
 					{	
-						if(EEpGetWakeupCnt()>=EEpGetHeartbeat()&&g_MqttReconnect==FALSE)
+						if((EEpGetWakeupCnt()>=EEpGetHeartbeat())&&g_MqttReconnect==FALSE)
 						{	
 							GattSingleFieldMerge("ppid");
 							MqttSetRequest(MQTT_REQ_SINGLEFIELD);
@@ -360,6 +367,9 @@ void MqttProc(void)
 						case MQTT_REQ_RAML:
 							GattMultiFieldMerge(); 
 							break;
+						case MQTT_REQ_ABAC:
+							GattAbacFieldMerge(); 
+							break;
 						}
 
 					AtCmdMerge(AT_CMD_CMQTTPAYLOAD);
@@ -391,6 +401,33 @@ void MqttProc(void)
 					AtCmdMerge(AT_CMD_AT);
 					TimerAtTOutStart(5000U,TRUE);
 					g_Mqtt_State=MQTT_STATE_MQTTTOPIC;
+
+					break;
+					}
+
+				if(g_Mqtt_ClinetConnect==0)
+				{
+					AtCmdMerge(AT_CMD_AT);
+					TimerAtTOutStart(5000U,TRUE);
+					g_Mqtt_State=MQTT_STATE_MQTTACCQ;
+					g_mqtt_broker_index=1;
+					g_Mqtt_ClinetConnect=1;
+					}
+				else
+				{
+					/*g_mqtt_broker_index=1;
+					
+					if(EEpGetWakeupCnt()>=EEpGetHeartbeat())
+					{	
+						GattSingleFieldMerge("ppid");
+						MqttSetRequest(MQTT_REQ_SINGLEFIELD);
+						EEpSetWakeupCnt(0);
+						g_mqtt_broker_index=0;
+
+						AtCmdMerge(AT_CMD_AT);
+						TimerAtTOutStart(5000U,TRUE);
+						g_Mqtt_State=MQTT_STATE_MQTTTOPIC;
+						}*/
 					}
 	
 				if(g_MqttReconnect)
@@ -398,6 +435,8 @@ void MqttProc(void)
 					AtCmdMerge(AT_CMD_AT);
 					TimerAtTOutStart(5000U,TRUE);
 					g_Mqtt_State=MQTT_STATE_MQTTSTART;
+
+					g_Mqtt_ClinetConnect=0;
 					}
 
 				break;	

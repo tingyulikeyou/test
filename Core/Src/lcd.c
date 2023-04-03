@@ -103,6 +103,11 @@ uint8_t  Lcd_Buffer[LCD_BUFFER_SIZE] ;
 // xdata u8  Lcd_Reg[LCD_BUFFER_SIZE] //_at_ 0x1E0;
 
 
+void Delayus(void)// 2us
+{
+        uint8_t i;
+        for(i=0;i<20;i++);
+}
 
 
 void LcdInit(void) 
@@ -380,7 +385,7 @@ void ShowStr(uint8_t *str)
 
 	//number=number&0x0f;
 
-	if((number>=0x00)&&(number<=0x09))
+	if(/*(number>=0x00)&&*/(number<=0x09))
 		DecodePos=number+Number_Pos;
 	else if((number>=0x0a)&&(number<=0x0f))
 		DecodePos=number-0x0a+Letter_Pos;

@@ -83,14 +83,14 @@ void HextoHexAscii(uint8_t hex,uint8_t*hexAscii)
 {
 	uint8_t temp=hex>>4;
 	
-	if(temp>=0&&temp<=9)
+	if(temp<=9)
 		hexAscii[0]=temp+'0';
 	else
 		hexAscii[0]=temp-10+'A';
 
 	temp=hex&0x0f;
 		
-	if(temp>=0&&temp<=9)
+	if(temp<=9)
 		hexAscii[1]=temp+'0';
 	else
 		hexAscii[1]=temp-10+'A';

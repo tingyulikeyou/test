@@ -10,6 +10,7 @@ enum
 	MQTT_REQ_SINGLEFIELD,
 	MQTT_REQ_CMD,
 	MQTT_REQ_RAML,
+	MQTT_REQ_ABAC
 };
 
 typedef enum

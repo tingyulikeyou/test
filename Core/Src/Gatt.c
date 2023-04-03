@@ -562,7 +562,7 @@ void GattInit(void)
    #ifdef E_MOB48V_PROJECT
    GattSetData( LIST_DTA, DTA_SLAT,"0.00");
    GattSetData( LIST_DTA, DTA_SLON,"0.00");
-	GattSetData( LIST_DTA, DTA_SSTM," ");
+   GattSetData( LIST_DTA, DTA_SSTM," ");
    #endif
   
 }
@@ -1350,7 +1350,89 @@ uint8_t* GattMultiFieldMerge(void)
 	return g_pub_json;
 }
 
+#ifdef ABACUSLEDER_SUPPORT
+extern ABACUS_IMAGE_TypeDef g_AbacusLeder_Image[MAX_ABACUS_NUMBER];
+uint8_t g_abacReprotIndex=0;
+void GattAbacSetReprotIndex(uint8_t index)
+{
+	g_abacReprotIndex=index;
+}
+uint8_t* GattAbacFieldMerge(void)
+{
+	uint8_t j,*json,m=0;
+	uint8_t topic_ext[20];
+	GATTPROP_Def *p=NULL;
+	uint8_t count=0,meta=0,head=0;
+	uint8_t tempjson[128];
+	uint8_t index=g_abacReprotIndex;
+	uint16_t i;
 
+	memset(g_pub_json,0x00,JSON_LEN);
+	memset(topic_ext,0x00,20);
+
+	
+
+
+	json=g_pub_json;
+
+	if(g_UserSet.abacus_num==0||g_UserSet.abacus_num>=MAX_ABACUS_NUMBER)
+		index=0;
+	//	return g_pub_json;
+	
+	memcpy(json,"{",1);
+	json+=strlen((char*)json);
+
+
+	if(g_UserSet.abacus_num==0||g_UserSet.abacus_num>=MAX_ABACUS_NUMBER)
+		sprintf((char*)json,"\"abac\":\"%s\",","null");
+	else	
+		sprintf((char*)json,"\"abac\":\"%s\",",g_UserSet.abacuslist[index]);
+	
+	json+=strlen((char*)json);
+
+	memcpy(json,"\"s\":[",5);
+	json+=5;
+	
+	for(i=0;i<60;i++)
+	{	sprintf((char*)json,"%d,",g_AbacusLeder_Image[index].sec[i]);
+		json+=strlen((char*)json);
+		}
+	memcpy(json-1,"],\"m\":[",7);
+	json+=6;
+	for(i=0;i<60;i++)
+	{	sprintf((char*)json,"%d,",g_AbacusLeder_Image[index].min[i]);
+		json+=strlen((char*)json);
+		}
+
+	memcpy(json-1,"],\"h\":[",7);
+	json+=6;
+	for(i=0;i<24;i++)
+	{	sprintf((char*)json,"%d,",g_AbacusLeder_Image[index].hour[i]);
+		json+=strlen((char*)json);
+		}
+
+	memcpy(json-1,"],\"d\":[",7);
+	json+=6;
+	for(i=0;i<365;i++)
+	{	sprintf((char*)json,"%d,",g_AbacusLeder_Image[index].day[i]);
+		json+=strlen((char*)json);
+		}
+	memcpy(json-1,"],\"y\":[",7);
+	json+=6;
+	for(i=0;i<10;i++)
+	{	sprintf((char*)json,"%d,",g_AbacusLeder_Image[index].year[i]);
+		json+=strlen((char*)json);
+		}
+
+	json-=1;
+	memcpy(json,"]}",2);
+
+	AtSetTopicId(NULL);
+
+	return g_pub_json;
+}
+
+#endif
 #endif
 
 void GattSetUplinkData(uint8_t *buf)
