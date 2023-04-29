@@ -46,7 +46,9 @@ typedef struct
 	uint8_t abacuslist[MAX_ABACUS_NUMBER][6];
 #endif
 
-	uint8_t jtag;
+	uint8_t jtag:4;
+	uint8_t log:4;
+
 	uint8_t reserved[3];
 	
 	uint32_t endmark;  // 4

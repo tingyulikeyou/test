@@ -12,6 +12,7 @@
 //const u16 KeyVoltTable[3]={0x00C0,0x052A,0x099a };
 
 uint8_t g_led_enable=1;
+uint8_t g_PwrKeyOn=TRUE;
 
 uint8_t g_oldkey_value;
 uint32_t g_u16KeyEvent  ;
@@ -54,7 +55,7 @@ extern uint8_t g_tokenState;
 extern TIMER_TypeDef g_SleepTimer;
 extern SYS_STATE_CODE_TypeDef  g_sysStateCode;
 //extern IWDG_HandleTypeDef hiwdg;
-
+extern uint8_t g_bleCmd_State;
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
@@ -289,7 +290,7 @@ void KeyScan(void)
 		#endif
 		}
 	
-
+     
 
 
 	if(keyBtn!=KEY_NONE)
@@ -315,6 +316,9 @@ void KeyScan(void)
 	}
 	else
 	{
+
+			g_PwrKeyOn=FALSE;
+			
 			#ifdef ROLL_SWITCH
 			if(g_RollSwitch==ROLL_RUN_RIGHT)
 			{	g_u16KeyEvent = (EVENT_CLICK << 8)|KEY_PREV;
@@ -347,6 +351,9 @@ void KeyScan(void)
 			//g_key_timer.downlock=FALSE;
 			g_KeyTimer.holdlock=FALSE;
 			g_KeyTimer.enable=FALSE;
+			#ifdef LCD128X64_SUPPORT
+			g_UiMenu.keyb_down=0;
+			#endif
 			
 			g_u16KeyEvent = (g_u16KeyEvent << 8)|g_oldkey_value;
 			g_oldkey_value=KEY_NONE;
@@ -354,6 +361,8 @@ void KeyScan(void)
 		}
 		else
 		{
+
+			
 			if(g_KeyTimer.count >= HOLD_TIME)
 			{
 				if(g_KeyTimer.holdlock==FALSE)
@@ -403,6 +412,420 @@ void KeyEventProcess(void)
 
 	TimeOutSet();
 
+	#ifdef LCD128X64_SUPPORT
+	switch(g_u16KeyEvent)
+	{
+	
+		case BTN_EVENT_IS(KEY_POWER, EVENT_CLICK):
+			break;
+		case BTN_EVENT_IS(KEY_POWER, EVENT_HOLD):
+			{
+				uint16_t counter_delay=0;
+
+				if(g_PwrKeyOn)
+					break;
+			   LcdClearAll();
+			   LcdUpdateAll();
+			   HAL_GPIO_WritePin(BL_CTRL_GPIO_Port, BL_CTRL_Pin, GPIO_PIN_RESET);
+			   while(counter_delay++<1000)
+			   {
+			   	#ifdef WDG_ENABLE
+			    //HAL_IWDG_Refresh(&hiwdg);
+					 fwdgt_counter_reload();
+				#endif
+				HAL_Delay(100);
+			  	HAL_GPIO_WritePin(PWR_CTRL_GPIO_Port, PWR_CTRL_Pin, GPIO_PIN_RESET);
+				
+			   	}
+			  break;
+			}
+		case BTN_EVENT_IS(KEY_ENTER, EVENT_PRESS):
+			{
+				g_UiMenu.keyb_down=1;
+			}
+			break;
+		case BTN_EVENT_IS(KEY_ENTER, EVENT_HOLD):
+			if(g_UiMenu.pop_menu!=POP_MENU_NONE)
+			{	g_UiMenu.pop_menu=POP_MENU_NONE;
+				g_UiMenu.pop_cnt=0;
+				}
+			switch(g_UiMenu.menu)
+			{
+				case MENU_IDLE:
+					break;
+				case MENU_ATT:
+					g_UiMenu.menu=MENU_IDLE;
+					g_UiMenu.submenu=IDLE_ITEM_ATT;
+					break;
+				case MENU_CMD:
+					g_UiMenu.menu=MENU_IDLE;
+					g_UiMenu.submenu=IDLE_ITEM_CMD;
+					break;
+				case MENU_STS:
+					g_UiMenu.menu=MENU_IDLE;
+					g_UiMenu.submenu=IDLE_ITEM_STS;
+					break;
+				case MENU_DTA:
+					g_UiMenu.menu=MENU_IDLE;
+					g_UiMenu.submenu=IDLE_ITEM_DTA;
+					break;
+				case MENU_DIA:
+					g_UiMenu.menu=MENU_IDLE;
+					g_UiMenu.submenu=IDLE_ITEM_DIA;
+					break;	
+				}
+			break;
+		case BTN_EVENT_IS(KEY_ENTER, EVENT_CLICK):
+			if(g_UiMenu.pop_menu!=POP_MENU_NONE)
+			{	g_UiMenu.pop_menu=POP_MENU_NONE;
+				g_UiMenu.pop_cnt=0;
+				}
+			
+			switch(g_UiMenu.menu)
+			{
+				case MENU_IDLE:
+				{
+					switch(g_UiMenu.submenu)
+					{
+						case IDLE_ITEM_ATT:
+							g_UiMenu.menu=MENU_ATT;
+							g_UiMenu.submenu=0;
+							break;
+						case IDLE_ITEM_CMD:
+							g_UiMenu.menu=MENU_CMD;
+							g_UiMenu.submenu=0;
+							break;
+						case IDLE_ITEM_STS:
+							g_UiMenu.menu=MENU_STS;
+							g_UiMenu.submenu=0;
+							break;
+						case IDLE_ITEM_DTA:
+							g_UiMenu.menu=MENU_DTA;
+							g_UiMenu.submenu=0;
+							break;
+						case IDLE_ITEM_DIA:
+							g_UiMenu.menu=MENU_DIA;
+							g_UiMenu.submenu=0;
+							break;
+						}
+					}
+					
+					break;
+				case MENU_ATT:
+					MenuPopSet(POP_MENU_META);
+					break;
+				case MENU_CMD:
+					//MenuPopSet(POP_MENU_META);
+					g_UiMenu.menu=MENU_CMD_PUBK+g_UiMenu.submenu;
+					g_UiMenu.submenu=0;
+				    memset((uint8_t*)&g_PaygInput,0x00,sizeof(g_PaygInput));
+					break;
+				case MENU_STS:
+					MenuPopSet(POP_MENU_META);
+					break;
+				case MENU_DTA:
+					MenuPopSet(POP_MENU_META);
+					break;
+				case MENU_DIA:
+					MenuPopSet(POP_MENU_META);
+					break;
+			    case MENU_CMD_PUBK:
+				case MENU_CMD_GSTW:
+				case MENU_CMD_GCTW:
+				case MENU_CMD_NAPN:	
+				case MENU_CMD_SWCH:
+				case MENU_CMD_READ:
+				case MENU_CMD_RPTM:
+				case MENU_CMD_HBFQ:		
+
+					if(g_UiMenu.menu==MENU_CMD_PUBK)
+					{
+						if(g_UiMenu.keyb_pos<10)
+						{
+							if(g_PaygInput.len<21)
+							{
+								g_PaygInput.key[g_PaygInput.len]=g_UiMenu.keyb_pos;
+							    g_PaygInput.len++;
+								}
+							}
+						else if(g_UiMenu.keyb_pos==10)
+						{
+							if(g_PaygInput.len)
+							{
+							    g_PaygInput.len--;
+								}
+							else
+							{
+								g_UiMenu.submenu=g_UiMenu.menu-MENU_CMD_PUBK;
+								g_UiMenu.menu=MENU_CMD;
+								}
+							
+							}
+						else
+						{
+							if(g_PaygInput.len>=21)
+							{
+								uint8_t token[32],j,len=0,tempstr[64]={0};
+								uint32_t token_hi,token_lo;
+								uint8_t temp[12],*p;
+								
+								
+								memset(token,0x00,32);
+
+								for(i=0;i<g_PaygInput.len;i++)
+								{   
+								    
+									len=strlen(token);
+									
+									token[len]=g_PaygInput.key[i]+'0';
+
+									len++;
+									
+									if(i>2)
+										j=i-2;
+									else
+										j=0;
+									
+									if(i==2||j%3==0&&j)
+										token[len]=' ';
+									}
+
+								sprintf(tempstr,"*%s#",token);
+
+								/*for(i=0;i<21;i++)
+									token[i]=g_PaygInput.key[i]+'0';
+
+								//memcpy(token,"031093657401791773705",21);
+
+							    token_lo = AtouI(&token[11]);
+								token[11]=0x00;	
+								token_hi = AtouI(token);
+
+								memset(token,0x00,32);
+
+								token[21]= token_lo>>24;
+						        token[20]= token_lo>>16;
+						        token[19]= token_lo>>8;
+						        token[18]= token_lo;
+						        
+						        token[25]= token_hi>>24;
+						        token[24]= token_hi>>16;
+						        token[23]= token_hi>>8;
+						        token[22]= token_hi;
+
+								
+								p=&token[18] ;   // ±£³ÖÔ­×´
+
+								temp[3] = p[7];
+						        temp[2] = p[6];
+						        temp[1] = p[5];
+						        temp[0] = p[4];
+						        temp[7] = p[3];
+						        temp[6] = p[2];
+						        temp[5] = p[1];
+						        temp[4] = p[0];
+
+								memcpy((uint8_t*)payg.hast_input, temp, 8);*/
+								/*payg.hast_input[0]=token_lo;
+								payg.hast_input[1]=token_hi;*/
+
+								//PaygOvesInput();
+
+								//EEpUpdateEnable();
+								g_bleCmd_State=BLE_CMD_PUBK;
+												
+								BlePacktSend(g_bleCmd_State,tempstr,strlen(tempstr));
+
+								
+								g_UiMenu.submenu=g_UiMenu.menu-MENU_CMD_PUBK;
+								g_UiMenu.menu=MENU_CMD;
+								}
+							else
+							{
+								
+								//g_UiMenu.submenu=g_UiMenu.menu-MENU_CMD_PUBK;
+								//g_UiMenu.menu=MENU_CMD;
+								}
+							}
+							
+						}
+						else
+						{
+								if(g_UiMenu.keyb_pos<10)
+								{
+									if(g_PaygInput.len<6)
+									{
+										g_PaygInput.key[g_PaygInput.len]=g_UiMenu.keyb_pos;
+									    g_PaygInput.len++;
+										}
+									}
+								else if(g_UiMenu.keyb_pos==10)
+								{
+									if(g_PaygInput.len)
+									{
+									    g_PaygInput.len--;
+										}
+									else
+									{
+										g_UiMenu.submenu=g_UiMenu.menu-MENU_CMD_PUBK;
+										g_UiMenu.menu=MENU_CMD;
+										}
+									
+									}
+								else
+								{
+									uint8_t tempstr[64]={0};	
+									uint16_t tempUint=0;
+
+									for(i=0;i<g_PaygInput.len;i++)
+									{   
+										tempstr[i]=g_PaygInput.key[i]+'0';
+											}
+									
+									tempstr[i]=0;
+
+									tempUint=atoi(tempstr);
+									g_bleCmd_State=g_UiMenu.menu-MENU_CMD_PUBK+BLE_CMD_PUBK;
+									BlePacktSend(g_bleCmd_State,(uint8_t*)&tempUint,2);
+
+									g_UiMenu.submenu=g_UiMenu.menu-MENU_CMD_PUBK;
+									g_UiMenu.menu=MENU_CMD;
+									}
+								}	
+				}
+			break;
+		case BTN_EVENT_IS(KEY_PREV, EVENT_CLICK):
+
+			if(g_UiMenu.pop_menu!=POP_MENU_NONE)
+			{	g_UiMenu.pop_menu=POP_MENU_NONE;
+				g_UiMenu.pop_cnt=0;
+				}
+			switch(g_UiMenu.menu)
+			{
+				case MENU_IDLE:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					else
+					{
+						g_UiMenu.submenu=IDLE_ITEM_DIA;
+						}
+					break;
+				case MENU_ATT:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					
+					break;
+				case MENU_CMD:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					
+					break;
+				case MENU_STS:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					
+					break;
+				case MENU_DTA:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					
+					break;
+				case MENU_DIA:
+					if(g_UiMenu.submenu)
+					{
+						g_UiMenu.submenu--;
+						}
+					
+					break;
+				case MENU_CMD_PUBK:
+				case MENU_CMD_GSTW:
+				case MENU_CMD_GCTW:
+				case MENU_CMD_NAPN:	
+				case MENU_CMD_SWCH:
+				case MENU_CMD_READ:
+				case MENU_CMD_RPTM:
+				case MENU_CMD_HBFQ:	
+					if(g_UiMenu.keyb_pos)
+					{
+						g_UiMenu.keyb_pos--;
+						}
+					break;
+				}
+			break;
+		case BTN_EVENT_IS(KEY_NEXT, EVENT_CLICK):
+			if(g_UiMenu.pop_menu!=POP_MENU_NONE)
+			{	g_UiMenu.pop_menu=POP_MENU_NONE;
+				g_UiMenu.pop_cnt=0;
+				}
+			switch(g_UiMenu.menu)
+			{
+				case MENU_IDLE:
+					if(g_UiMenu.submenu<IDLE_ITEM_DIA)
+					{
+						g_UiMenu.submenu++;
+						}
+					else
+					{
+						g_UiMenu.submenu=IDLE_ITEM_ATT;
+						}
+					break;
+				case MENU_ATT:
+					if(g_UiMenu.submenu<ATT_COUNT-1)
+					{
+						g_UiMenu.submenu++;
+						}
+					break;
+				case MENU_CMD:
+					if(g_UiMenu.submenu<CMD_COUNT-1)
+					{
+						g_UiMenu.submenu++;
+						}
+					break;
+				case MENU_STS:
+					if(g_UiMenu.submenu<STS_COUNT-1)
+					{
+						g_UiMenu.submenu++;
+						}
+					break;
+				case MENU_DTA:
+					if(g_UiMenu.submenu<DTA_COUNT-1)
+					{
+						g_UiMenu.submenu++;
+						}
+					break;
+				case MENU_DIA:
+					if(g_UiMenu.submenu<DIA_COUNT-1)
+					{
+						g_UiMenu.submenu++;
+						}	
+					break;
+				case MENU_CMD_PUBK:
+				case MENU_CMD_GSTW:
+				case MENU_CMD_GCTW:
+				case MENU_CMD_NAPN:	
+				case MENU_CMD_SWCH:
+				case MENU_CMD_READ:
+				case MENU_CMD_RPTM:
+				case MENU_CMD_HBFQ:	
+					if(g_UiMenu.keyb_pos<11)
+					{
+						g_UiMenu.keyb_pos++;
+						}
+					break;	
+				}
+			break;	
+			}
+	#else
 	
 	switch(g_u16KeyEvent)
 	{
@@ -650,10 +1073,13 @@ void KeyEventProcess(void)
 		 case BTN_EVENT_IS(KEY_POWER, EVENT_HOLD):
 			{
 				uint16_t counter_delay=0;
+
+				if(g_PwrKeyOn)
+					break;
 			   LcdClearAll();
 			   LcdUpdateAll();
 			   HAL_GPIO_WritePin(BL_CTRL_GPIO_Port, BL_CTRL_Pin, GPIO_PIN_RESET);
-			   while(counter_delay<1000)
+			   while(counter_delay++<1000)
 			   {
 			   	#ifdef WDG_ENABLE
 			    //HAL_IWDG_Refresh(&hiwdg);
@@ -830,6 +1256,7 @@ void KeyEventProcess(void)
 				break; 
 			}
 		}
+	#endif
 
 	g_u16KeyEvent=0;
 }

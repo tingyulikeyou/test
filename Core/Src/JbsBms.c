@@ -27,6 +27,8 @@ uint16_t g_jbd_epromWrite_timer=0;
 
 uint16_t g_jbd_ComErr_Cnt=0;
 
+
+
 //DD5A30020005FFC977   5S
 
 extern BQ40Z50_TypeDef g_bq40z50_state;
@@ -239,6 +241,8 @@ void JbsBmsTask(void)
 {
 
 	uint16_t i=0,len=0,j=0;
+
+	
 
 	if(g_BmsGetInfor_Enable)
 	{	

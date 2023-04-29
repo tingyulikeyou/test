@@ -315,6 +315,52 @@ uint8_t GattGetListProp(uint8_t dt_list,uint8_t id,uint8_t *prop)
 
 }
 
+uint8_t GattGetListMeta(uint8_t dt_list,uint8_t id,uint8_t *meta)
+{
+	GATTPROP_Def *p=NULL;
+	
+	switch(dt_list)
+	{
+		case LIST_ATT:
+			if(id<ATT_COUNT)
+			{	memcpy(meta,g_gatt1_list.att[id].meta,strlen(g_gatt1_list.att[id].meta));
+				return TRUE;
+				}
+			break;
+		case LIST_CMD:
+			if(id<CMD_COUNT)
+			{	memcpy(meta,g_gatt1_list.cmd[id].meta,strlen(g_gatt1_list.cmd[id].meta));
+				return TRUE;
+				}
+			break;
+		case LIST_STS:	
+			if(id<STS_COUNT)
+			{	memcpy(meta,g_gatt1_list.sts[id].meta,strlen(g_gatt1_list.sts[id].meta));
+				return TRUE;
+				}
+		case LIST_DTA:	
+			if(id<DTA_COUNT)
+			{	memcpy(meta,g_gatt1_list.dta[id].meta,strlen(g_gatt1_list.dta[id].meta));
+				return TRUE;
+				}
+			break;
+		#ifndef DC_PUMP_SUPPORT
+		case LIST_DIA:
+			if(id<DIA_COUNT)
+			{	memcpy(meta,g_gatt1_list.dia[id].meta,strlen(g_gatt1_list.dia[id].meta));
+				return TRUE;
+				}
+			break;
+		#endif
+		default:
+			return FALSE;
+	}
+
+	return FALSE;
+
+}
+
+
 
 GATTPROP_Def *GattGetListInfor(uint8_t dt_list,uint8_t *count)
 {
@@ -427,6 +473,47 @@ uint8_t GattGetData(uint8_t list,uint8_t id,uint8_t*data)
 	}
 	return TRUE;
 }
+
+
+uint8_t GattGetDataStr(uint8_t list,uint8_t id,uint8_t*data)
+{
+	GATTPROP_Def *p;
+	uint8_t count;
+	
+	
+	p=GattGetListInfor(list,&count);
+
+	if(p==NULL||id>=count)
+		return FALSE;
+	
+	switch(p[id].data_type)
+	{
+		case TYPE_UINT16:
+			//memcpy(data,p[id].value,2);
+			sprintf(data,"%s:%d\0",p[id].prop,*((uint16_t*)p[id].value));
+			break;
+		case TYPE_STRS:	
+			//memcpy(data,p[id].value,strlen((char*)p[id].value));
+			sprintf(data,"%s:%s\0",p[id].prop,p[id].value);
+			break;
+		case TYPE_INT:	
+			//memcpy(data,p[id].value,2);
+			sprintf(data,"%s:%d\0",p[id].prop,*((int16_t*)p[id].value));
+			break;
+		case TYPE_FLOAT_STR:	
+			//memcpy(data,p[id].value,strlen((char*)p[id].value));
+			sprintf(data,"%s:%f\0",p[id].prop,*((float*)p[id].value));
+			break;
+		case TYPE_UINT32:	
+			//memcpy(data,p[id].value,4);
+			sprintf(data,"%s:%d\0",p[id].prop,*((uint32_t*)p[id].value));
+			break;	
+		default:
+			return FALSE;
+	}
+	return p[id].data_type;
+}
+
 
 GATT1_Def* GattGetList(void)
 {

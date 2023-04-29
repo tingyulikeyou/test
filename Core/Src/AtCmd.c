@@ -27,7 +27,8 @@ char *Defualt_URL= "AT+CIPSTART=\"TCP\",\"mqtt-2.omnivoltaic.com\",\"1883\"\r\n"
 //char Set_Apn[SETAPN_LEN];
 
 const uint8_t g_MqttPubFixedPath[]="dt/V01/GPRSV2/";
-const uint8_t g_MqttSubFixedPath[]="cmd/V01/GPRSV2/";
+const uint8_t g_MqttSubFixedPath[]="cmd/V01/GPRSV2/+/";
+const uint8_t g_MqttComparePath[]="cmd/V01/GPRSV2/\0";
 
 
 #define SMS_INDEX_SIZE 14
@@ -265,9 +266,9 @@ void AtCmdSend(uint8_t * buffer)
   //   HAL_UART_Transmit(&huart2,buffer,size,size*20);
     Uart2Send(buffer,size);
 	 #ifdef DEBUG_AT_LOG
-	 Uart5Send("MCU:",4);
+	  LogPrintf("MCU:",4);
 	 //HAL_UART_Transmit(&huart3,buffer,size,1000);
-	  Uart5Send(buffer,size);
+	  LogPrintf(buffer,size);
      #endif
 }
 
@@ -276,9 +277,9 @@ void AtCmdLenSend(uint8_t * buffer,uint16_t size)
    //  HAL_UART_Transmit(&huart2,buffer,size,size*20);
    Uart2Send(buffer,size);
 	 #ifdef DEBUG_AT_LOG
-	  Uart5Send("MCU:",4);
+	  LogPrintf("MCU:",4);
 	// HAL_UART_Transmit(&huart3,buffer,size,1000);
-	Uart5Send(buffer,size);
+	  LogPrintf(buffer,size);
      #endif
 }
 
@@ -1528,14 +1529,17 @@ void AtCmdPaser(uint8_t *buffer,uint8_t cmd)
 
 
 	//p=strstr(str,"cmd/ov/1/GPRS/");
-	p_buf=(char*)AtStrStr((uint8_t*)str,(uint8_t*)g_MqttSubFixedPath);
+	p_buf=(char*)AtStrStr((uint8_t*)str,(uint8_t*)g_MqttComparePath);
 
 	if(p_buf!=NULL)
 	{
 
 		if(strstr(p_buf,MQTT_ClienID)!=NULL)
 		{
-
+			if(strstr(p_buf,"+CMQTTRXPAYLOAD: 0")!=NULL)
+				g_mqtt_broker_index=0;
+			else
+				g_mqtt_broker_index=1;
 			//cmd parse
 			p=strstr(p_buf,"/cmd/nbroker/");  //"ip ,port,username,password"
 			if(p!=NULL)
@@ -1897,6 +1901,7 @@ void AtCmdPaser(uint8_t *buffer,uint8_t cmd)
 			p=strstr(p_buf,"\"get\":");
 			if(p!=NULL)
 			{
+				 
 				 if(strstr(p_buf,"/meta")!=NULL)
 					meta=1;
 
@@ -2178,21 +2183,28 @@ void AtCmdPaser(uint8_t *buffer,uint8_t cmd)
 			p=strstr(p_buf,"pubk\":\"");
 			if(p!=NULL)
 			 {
-			 	uint8_t len=0;
+			 	uint8_t len=0,pbukbuf[64];
+				
 				AtCmdTokenParse((uint8_t*)p,"pubk\":\"*0");
+
+				memset(pbukbuf,0x00,64);
 				
 				memset(tempBuff,0x00,128);
 
 				if( g_tokenState==TOKEN_OK)
 				{
-					sprintf((char*)tempBuff,"\"pubk\":\"%s",p+7);
+					len=AtCmdGetValueLen(p+7,'#')+1;
+
+					memcpy(pbukbuf,p+7,len);  //for 4G
+					
+					sprintf((char*)tempBuff,"\"pubk\":\"%s\"",pbukbuf);
+
 					len=strlen((char*)tempBuff);
 
-					if(len)
+					/*if(len)
 					{	tempBuff[len-1]=0;
 					    tempBuff[len-2]=0;
-						}
-					
+						}*/
 					}
 				else if( g_tokenState==TOKEN_USEED)
 					sprintf((char*)tempBuff,"\"pubk\":\"%s\"","password use");
@@ -2632,12 +2644,12 @@ void AtCmdProc(void)
 			g_RxGsmParseSize=i+1-g_RxGsmParsePos;	
 
 #ifdef DEBUG_AT_LOG
-			Uart5Send("GSM:",4);
+			LogPrintf("GSM:",4);
 
 			//sprintf(testprintf,"%02x,%02x,%02x %02x  ",g_GsmRbuffer[i-2],g_GsmRbuffer[i-1],g_GsmRbuffer[i],g_GsmRbuffer[i+1]);
-			Uart5Send(testprintf,strlen((char*)testprintf));
+			LogPrintf(testprintf,strlen((char*)testprintf));
 			//HAL_UART_Transmit(&huart1,&g_GsmRbuffer[g_RxGsmParsePos],strlen((char*)&g_GsmRbuffer[g_RxGsmParsePos]),1000);
-			Uart5Send(&g_GsmRbuffer[g_RxGsmParsePos],strlen((char*)&g_GsmRbuffer[g_RxGsmParsePos]));
+			LogPrintf(&g_GsmRbuffer[g_RxGsmParsePos],strlen((char*)&g_GsmRbuffer[g_RxGsmParsePos]));
 #endif
 			
 			AtCmdPaser(&g_GsmRbuffer[g_RxGsmParsePos],g_AtCmdState);

@@ -124,6 +124,8 @@ int main(void)
  #else
 	  //HAL_Delay(2000);
  #endif
+	TimerInit();
+	systick_config();
 
     CanInit();
 
@@ -135,13 +137,17 @@ int main(void)
 	BleUartInit();
 	#endif
 
-   	 
+   	 #ifdef LCD128X64_SUPPORT
+	 LCD_Init();
+	 MenuRefresh();	
+	 MenuShow();
+	 #else
 	 LcdInit();
+	 #endif
 	
 	 EEpInit();
 	
-     TimerInit();
-	 systick_config();
+
 
 	 
 
@@ -234,6 +240,11 @@ int main(void)
 
 	 HAL_GPIO_WritePin(GSM_EN_GPIO_Port, GSM_EN_Pin, GPIO_PIN_SET);
 
+
+	//LcdShowAscStrs(0,0,"Demo lcd",16);
+
+	//LcdUpdate();
+
     
     /* print out the clock frequency of system, AHB, APB1 and APB2 */
    // printf("\r\nCK_SYS is %d", rcu_clock_freq_get(CK_SYS));
@@ -254,6 +265,7 @@ int main(void)
 	//	HAL_GPIO_WritePin(BAT_PWR_GPIO_Port,BAT_PWR_Pin,RESET);
 	//	HAL_GPIO_WritePin(GPS_PWR_GPIO_Port,GPS_PWR_Pin,RESET);
 	//	continue;
+	//LcdUpdate();
 
 		#ifdef CAN_TEST
 		HAL_Delay(1000);
@@ -334,6 +346,10 @@ int main(void)
 		  #ifdef BMS_JBD_SUPPROT
 				  JbsBmsTask(); 	
 		  #endif
+		  #endif
+		  #ifdef LCD128X64_SUPPORT
+		  		  KeyEventProcess();	
+		  		  MenuShow();	
 		  #endif
 		  #endif
 			
@@ -515,6 +531,14 @@ void GpioInit(void)
 
 	gpio_init(BL_CTRL_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, BL_CTRL_Pin);
 
+	#ifdef LCD128X64_SUPPORT
+	gpio_init(LCD_RST_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_RST_Pin);
+	gpio_init(LCD_PWR_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_PWR_Pin);
+	gpio_init(LCD_RS_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, LCD_RS_Pin);
+
+	HAL_GPIO_WritePin(LCD_PWR_GPIO_Port,LCD_PWR_Pin,SET);
+	#endif
+
 	HAL_GPIO_WritePin(CAN_INH_GPIO_Port,CAN_INH_Pin,SET);
 	HAL_GPIO_WritePin(CAN_EN_GPIO_Port,CAN_EN_Pin,SET);
 
@@ -533,8 +557,10 @@ void GpioInit(void)
 	gpio_init(SW_B_GPIO_Port, GPIO_MODE_IPU, GPIO_OSPEED_10MHZ, SW_B_Pin);
 
     gpio_init(RELAY_EN_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, RELAY_EN_Pin);
-	
 
+	gpio_init(PWR_CTRL_GPIO_Port, GPIO_MODE_OUT_PP, GPIO_OSPEED_10MHZ, PWR_CTRL_Pin);
+	//ble pwr
+    HAL_GPIO_WritePin(BAT_PWR_GPIO_Port,BAT_PWR_Pin,SET);
 	ExtiInit();
 }
 
@@ -742,6 +768,15 @@ void Uart5Send(uint8_t *buffer,uint16_t size)
 		}
 }
 
+
+void LogPrintf(uint8_t *buffer,uint16_t size)
+{
+	extern USER_SET_TypeDef g_UserSet;
+		
+	if(g_UserSet.log)
+	{	Uart5Send(buffer,size);
+		}
+}
 
 
 void CanInit(void)

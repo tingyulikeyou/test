@@ -74,6 +74,7 @@ OF SUCH DAMAGE.
 #define E_SIM_SUPPORT 
 #define ROLL_SWITCH
 #define MODULE_4G
+//#define LCD128X64_SUPPORT
 
 #define ABACUSLEDER_SUPPORT
 
@@ -130,6 +131,10 @@ OF SUCH DAMAGE.
 #include "bms309proc.h"
 #endif
 
+#ifdef LCD128X64_SUPPORT
+#include "lcd128x64.h"
+#endif
+
 #define DS_SCLK_Pin GPIO_PIN_13
 #define DS_SCLK_GPIO_Port GPIOC
 #define DS_IO_Pin GPIO_PIN_14
@@ -151,14 +156,29 @@ OF SUCH DAMAGE.
 #define BAT_PWR_Pin GPIO_PIN_8
 #define BAT_PWR_GPIO_Port GPIOA
 
+
+
+#ifdef LCD128X64_SUPPORT
+#define LCD_CS_Pin GPIO_PIN_4
+#define LCD_CS_GPIO_Port GPIOA
+#define LCD_CLK_Pin GPIO_PIN_7
+#define LCD_CLK_GPIO_Port GPIOA
+#define LCD_DAT_Pin GPIO_PIN_6
+#define LCD_DAT_GPIO_Port GPIOA
+
+#define BL_CTRL_Pin GPIO_PIN_4
+#define BL_CTRL_GPIO_Port GPIOC
+#else
 #define LCD_CS_Pin GPIO_PIN_4
 #define LCD_CS_GPIO_Port GPIOA
 #define LCD_CLK_Pin GPIO_PIN_5
 #define LCD_CLK_GPIO_Port GPIOA
 #define LCD_DAT_Pin GPIO_PIN_7
 #define LCD_DAT_GPIO_Port GPIOA
+
 #define BL_CTRL_Pin GPIO_PIN_6
 #define BL_CTRL_GPIO_Port GPIOA
+#endif
 #define BLE_RESET_Pin GPIO_PIN_1
 #define BLE_RESET_GPIO_Port GPIOB
 #define BLE_CS_Pin GPIO_PIN_2
@@ -193,7 +213,14 @@ OF SUCH DAMAGE.
 #define RELAY_EN_Pin GPIO_PIN_1
 #define RELAY_EN_GPIO_Port GPIOA
 
-
+#ifdef LCD128X64_SUPPORT
+#define LCD_RST_Pin GPIO_PIN_2
+#define LCD_RST_GPIO_Port GPIOC
+#define LCD_PWR_Pin GPIO_PIN_3
+#define LCD_PWR_GPIO_Port GPIOC
+#define LCD_RS_Pin GPIO_PIN_5
+#define LCD_RS_GPIO_Port GPIOA
+#endif
 
 #define GPIO_PIN_SET  SET
 #define GPIO_PIN_RESET  RESET
@@ -215,6 +242,7 @@ void Uart2Send(uint8_t *buffer,uint16_t size);
 void Uart3Send(uint8_t *buffer,uint16_t size);
 void Uart4Send(uint8_t *buffer,uint16_t size);
 void Uart5Send(uint8_t *buffer,uint16_t size);
+void LogPrintf(uint8_t *buffer,uint16_t size);
 
 
 

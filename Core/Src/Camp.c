@@ -633,8 +633,8 @@ void CampGetTask(void)
 	
        if(g_CampGetEnable)
        	{
-		CampGetTxCmd();
-		g_CampGetEnable=FALSE;
+			CampGetTxCmd();
+			g_CampGetEnable=FALSE;
        	}
 }
 

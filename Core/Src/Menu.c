@@ -119,7 +119,52 @@ void MenuRefresh(void)
 {
 	g_Ui_Refresh=TRUE;
 }
+#ifdef LCD128X64_SUPPORT
+void KeyboardShow(void)
+{
+   uint8_t i,str[2]={0};
+   uint8_t keystr[]="0123456789<E";
+   LcdDrawRegion(0,50,128,14,0);
+   LcdDrawFrame(2+2,50,119,13);  	
+   for(i=0;i<12;i++)
+   	{
+   		str[0]=keystr[i];
+		str[1]=0;
+		if(g_UiMenu.keyb_pos==i)
+		{	
+			//LcdDrawLine(4+2+i*10-1,51,1,12);
+			LcdDrawRegion(4+2+i*10-1,51,8,12,1);
+			if(g_UiMenu.keyb_down)
+				LcdShowAscStrs(4+2+i*10,51,str,12);
+			else	
+				LcdShowInvtAscStrs(4+2+i*10,51,str,12,0);
+			//LcdDrawLine(4+2+i*10+6,51,1,12);
+			}
+		else
+			LcdShowAscStrs(4+2+i*10,51,str,12);
+		
+		LcdDrawLine(4+2+i*10+7,51,1,12);
+   	}
+   	
+  // LcdShowAscStrs(2,51,"01234567890<C",12);
+   
+  /* LcdShowAscStrs(80+1,27,"6",12);
+   LcdShowAscStrs(80+9,27,"7",12);
+   LcdShowAscStrs(80+18,27,"8",12);
+   LcdShowAscStrs(80+27,27,"9",12);
 
+   LcdShowAscStrs(80+1,39,"2",12);
+   LcdShowAscStrs(80+9,39,"3",12);
+   LcdShowAscStrs(80+18,39,"4",12);
+   LcdShowAscStrs(80+27,39,"5",12);
+
+   LcdShowAscStrs(80+1,51,"0",12);
+   LcdShowAscStrs(80+9,51,"1",12);
+   LcdShowAscStrs(80+18,51,"<",12);
+   LcdShowAscStrs(80+27,51,"c",12);
+   LcdDrawFrame(80,26,36,36);*/
+}
+#endif
 void MenuShow(void)
 {
 	uint8_t tempStr[12];
@@ -128,6 +173,257 @@ void MenuShow(void)
 	
 	if(g_Ui_Refresh)
 	{
+		#ifdef LCD128X64_SUPPORT
+		uint8_t gattStr[64],len=0;
+		uint8_t MetaStr[128]={0};
+		uint8_t porpStr[8]={0},temp;
+		uint8_t showstr[32]={0};
+		switch(g_UiMenu.menu)
+		{
+			case MENU_IDLE:
+				//LcdShowInvtAscStrs(0,0,"ATT|CM|ST|DT|DI",12,0);
+				LcdDrawRegion(0,0,128,64,0);
+
+				if(g_UiMenu.submenu==0)
+					LcdShowInvtAscStrs(4,1,"ATT",12,0);
+				else	
+					LcdShowAscStrs(4,1,"ATT",12);
+				
+				if(g_UiMenu.submenu==1)
+					LcdShowInvtAscStrs(26+4,1,"CMD",12,0);
+				else	
+					LcdShowAscStrs(26+4,1,"CMD",12);
+				
+				if(g_UiMenu.submenu==2)
+					LcdShowInvtAscStrs(52+4,1,"STS",12,0);
+				else	
+					LcdShowAscStrs(52+4,1,"STS",12);
+				
+				if(g_UiMenu.submenu==3)
+					LcdShowInvtAscStrs(78+4,1,"DTA",12,0);
+				else	
+					LcdShowAscStrs(78+4,1,"DTA",12);
+				
+				if(g_UiMenu.submenu==4)
+					LcdShowInvtAscStrs(104+4,1,"DIA",12,0);
+				else	
+					LcdShowAscStrs(104+4,1,"DIA",12);
+				LcdDrawLine(0,13,128,1);
+				
+				//LcdDrawLine(0,0,128,1);
+				
+				LcdDrawLine(26,1,1,12);
+				LcdDrawLine(52,1,1,12);
+				LcdDrawLine(78,1,1,12);
+				LcdDrawLine(104,1,1,12);
+
+				//LcdDrawRegion(0,14,128,50,0);
+
+				for(i=0;i<4;i++)
+				{
+					GattGetDataStr(LIST_ATT+g_UiMenu.submenu,i,gattStr);
+
+					memcpy(showstr,gattStr,20);
+					LcdShowAscStrs(1,14+i*12,showstr,12);
+					}
+				break;
+			case MENU_ATT:  
+			case MENU_CMD:
+			case MENU_STS:
+			case MENU_DTA:
+			case MENU_DIA:
+				switch(g_UiMenu.menu)
+				{
+					case MENU_ATT: 
+						LcdShowAscStrs(4,1,"ATT",12);
+						LcdDrawFrame(3,0,19,12);
+						break;
+					case MENU_CMD:
+						LcdShowAscStrs(26+4,1,"CMD",12);
+						LcdDrawFrame(26+4-1,0,19,12);
+						break;
+					case MENU_STS:
+						LcdShowAscStrs(52+4,1,"STS",12);
+						LcdDrawFrame(52+4-1,0,19,12);
+						break;
+					case MENU_DTA:
+						LcdShowAscStrs(78+4,1,"DTA",12);
+						LcdDrawFrame(78+4-1,0,19,12);
+						break;
+					case MENU_DIA:
+						LcdShowAscStrs(104+4,1,"DIA",12);
+						LcdDrawFrame(104+4-1,0,19,12);
+						break;
+					}
+
+				LcdDrawRegion(0,14,128,50,0);
+				
+				if(g_UiMenu.submenu>3)
+				{
+					for(i=0;i<4;i++)
+					{
+						GattGetDataStr(LIST_ATT+g_UiMenu.menu-MENU_ATT,i+g_UiMenu.submenu-3,gattStr);
+						
+						if(i==3)
+						{	len=strlen(gattStr);
+							if(len>21)
+							{	
+								g_UiMenu.scroll_enable=1;
+								g_UiMenu.scroll_num=len-21;
+								}
+							else
+							{	g_UiMenu.scroll_enable=0;
+								g_UiMenu.scroll_num=0;
+							    g_UiMenu.scroll_pos=0;
+								}
+							memcpy(showstr,&gattStr[g_UiMenu.scroll_pos],21);
+							LcdShowInvtAscStrs(1,14+i*12,showstr,12,0);
+							}
+						else
+						{	memcpy(showstr,gattStr,21);
+							LcdShowAscStrs(1,14+i*12,showstr,12);
+							}
+						}
+					}
+				else
+				{
+					for(i=0;i<4;i++)
+					{
+						GattGetDataStr(LIST_ATT+g_UiMenu.menu-MENU_ATT,i,gattStr);
+
+						if(i==g_UiMenu.submenu)
+						{	
+							len=strlen(gattStr);
+							if(len>21)
+							{	
+								g_UiMenu.scroll_enable=1;
+								g_UiMenu.scroll_num=len-21;
+								}
+							else
+							{	g_UiMenu.scroll_enable=0;
+								g_UiMenu.scroll_num=0;
+							    g_UiMenu.scroll_pos=0;
+								}
+							memcpy(showstr,&gattStr[g_UiMenu.scroll_pos],21);
+							LcdShowInvtAscStrs(1,14+i*12,showstr,12,0);
+							}
+						else	
+						{	
+							memcpy(showstr,gattStr,21);
+							LcdShowAscStrs(1,14+i*12,showstr,12);
+							}
+						}
+					}
+
+				if(g_UiMenu.pop_menu==POP_MENU_META)
+				{
+					LcdDrawRegion(5,19,118,40,0);
+					LcdDrawFrame(5,19,118,40);
+
+					GattGetListMeta(LIST_ATT+g_UiMenu.menu-MENU_ATT,g_UiMenu.submenu,MetaStr);
+
+					
+					memset(gattStr,0x00,64);
+					
+					memcpy(gattStr,MetaStr,18);
+					LcdShowAscStrs(11,20,gattStr,12);
+					
+					if(strlen(MetaStr)>18)
+					{	memset(gattStr,0x00,64);
+						memcpy(gattStr,MetaStr+18,18);
+						LcdShowAscStrs(11,20+1*12,gattStr,12);
+						}
+					if(strlen(MetaStr)>36)
+					{	memset(gattStr,0x00,64);
+						memcpy(gattStr,MetaStr+36,18);
+						LcdShowAscStrs(11,20+2*12,gattStr,12);
+						}
+					}
+
+					
+				break;
+			case MENU_CMD_PUBK:
+			case MENU_CMD_GSTW:
+			case MENU_CMD_GCTW:
+			case MENU_CMD_NAPN:	
+			case MENU_CMD_SWCH:
+			case MENU_CMD_READ:
+			case MENU_CMD_RPTM:
+			case MENU_CMD_HBFQ:	
+				LcdDrawRegion(0,14,128,50,0);
+			    GattGetListProp(LIST_CMD,g_UiMenu.menu-MENU_CMD_PUBK,porpStr);
+			    sprintf(gattStr,"%s input:\0",porpStr);
+				LcdShowAscStrs(INPUT_TITLE_X,INPUT_TITLE_Y,gattStr,12);
+
+				memset(gattStr,0x00,64);
+				if(g_UiMenu.menu==MENU_CMD_PUBK)
+				{
+					for(i=0;i<g_PaygInput.len;i++)
+					{   
+					    
+						len=strlen(gattStr);
+						
+						gattStr[len]=g_PaygInput.key[i]+'0';
+
+						len++;
+						
+						if(i>2)
+							temp=i-2;
+						else
+							temp=0;
+						
+						if(i==2||temp%3==0&&temp)
+							gattStr[len]=' ';
+						
+						//LcdShowAscStrs(INPUT_LINE_X+i*12,INPUT_LINE_X,gattStr,12);
+						}
+					if(g_UiMenu.flash&&g_PaygInput.len<21)
+						gattStr[strlen(gattStr)]='|';
+					if(strlen(gattStr)>20)
+						LcdShowAscStrs(INPUT_LINE1_X,INPUT_LINE1_Y,&gattStr[20],12);
+					gattStr[20]=0;
+					
+					LcdShowAscStrs(INPUT_LINE_X,INPUT_LINE_Y,gattStr,12);
+					}
+				else
+				{
+					for(i=0;i<g_PaygInput.len;i++)
+					{   
+						len=strlen(gattStr);
+						gattStr[len]=g_PaygInput.key[i]+'0';
+						len++;
+						}
+					if(g_UiMenu.flash&&g_PaygInput.len<6)
+						gattStr[strlen(gattStr)]='|';
+					
+					LcdShowAscStrs(INPUT_LINE_X,INPUT_LINE_Y,gattStr,12);
+					}
+				
+				
+				KeyboardShow();
+
+			}
+
+		if(TimerGetEventState(TIMER_UI_FLASH))
+		{
+			TimerEventClear(TIMER_UI_FLASH);
+			if(g_UiMenu.scroll_enable)
+			{
+				if(g_UiMenu.scroll_pos<g_UiMenu.scroll_num-1)
+					g_UiMenu.scroll_pos++;
+				else
+					g_UiMenu.scroll_pos=0;
+				}
+			if(g_UiMenu.pop_cnt)
+			{
+				g_UiMenu.pop_cnt--;
+
+				if(g_UiMenu.pop_cnt==0)
+					g_UiMenu.pop_menu=POP_MENU_NONE;
+				}
+			}
+		LcdUpdate();
+		#else
 		LcdClearAll();
 
 		memset(tempStr,0x00,12);
@@ -439,6 +735,7 @@ void MenuShow(void)
 		LcdUpdateAll();
 
 		#endif
+		#endif
 
 		g_Ui_Refresh=FALSE;	
 		}
@@ -446,6 +743,7 @@ void MenuShow(void)
 }
 
 #ifndef DC_PUMP_SUPPORT
+#ifndef LCD128X64_SUPPORT
 
 void MenuShowIdle(uint8_t submenu,uint8_t *tempStr)
 {
@@ -1017,5 +1315,6 @@ void MenuShowPaygInput(uint8_t submenu,uint8_t *tempStr)
 		tempStr[i]=g_PaygInput.key[m+i]+'0';
 		}
 }
+#endif
 #endif
 

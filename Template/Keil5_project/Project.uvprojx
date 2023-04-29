@@ -522,6 +522,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Core\Src\i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd128X64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd128X64.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1332,6 +1337,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Core\Src\i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd128X64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd128X64.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2140,6 +2150,11 @@
               <FileName>i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Core\Src\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd128X64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd128X64.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2950,6 +2965,11 @@
               <FileName>i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Core\Src\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd128X64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Core\Src\lcd128X64.c</FilePath>
             </File>
           </Files>
         </Group>

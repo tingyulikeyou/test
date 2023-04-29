@@ -6,8 +6,9 @@
 #define BLE_BUFFER_SIZE  128
 #if defined(E_MOB48V_PROJECT) ||defined(P10KW_PROJECT)
 #define BLE_ENABLE
-//#define BLE_MASTER_ENABLE
-
+#ifdef LCD128X64_SUPPORT
+#define BLE_MASTER_ENABLE
+#endif
 #endif
 
 

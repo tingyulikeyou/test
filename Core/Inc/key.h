@@ -6,7 +6,7 @@
 #define KEY_TIMER_COUNT  (uint32_t)(60*1000)	// 20ms
 
 
-#define DEBOUNCE_TIME					(uint32_t)(200)	// 20ms
+#define DEBOUNCE_TIME					(uint32_t)(20)	// 20ms
 #define SHORT_PRESSED_TIME		(uint32_t)(500)	// 500ms
 #define LONG_PRESSED_TIME			(uint32_t)(750)	// 750ms
 #define HOLD_TIME							(uint32_t)(2000)	// 3s

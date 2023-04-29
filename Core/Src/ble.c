@@ -1086,7 +1086,7 @@ void BleCmdProc(void)
 					//memcpy((uint8_t*)&g_GattMem[MEM_ADDR_NAPN],buffer,MEM_SIZE_NAPN);
 					break;
 				case BLE_CMD_SWCH:
-					memcpy((uint8_t*)&g_GattMem[MEM_ADDR_GCTW],buffer,MEM_SIZE_GCTW);
+					memcpy((uint8_t*)&g_GattMem[MEM_ADDR_SWCH],buffer,MEM_SIZE_SWCH);
 					break;
 				case BLE_CMD_READ:
 					memcpy((uint8_t*)&g_GattMem[MEM_ADDR_READ],buffer,MEM_SIZE_READ);
@@ -1565,9 +1565,10 @@ void BleCmdProc(void)
 				#endif
 				}
 
-				memset(g_Uart3Buf,0x00,UART3_RX_BUF_SIZE);
-		   	    huart3.RxXferCount=UART3_RX_BUF_SIZE;
-			    huart3.pRxBuffPtr=uartbuff; 
+				memset((void*)g_Uart1Buf,0x00,UART1_RX_BUF_SIZE);
+				huart1.RxXferCount=0;
+				huart1.pRxBuffPtr=(uint8_t*)g_Uart1Buf; 
+				//BleDataReprot(g_bleCmd_State);
 
 			}
 

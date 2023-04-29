@@ -1094,6 +1094,7 @@ void GattSetUplinkData(uint8_t *buf);
 void GattGetOpid(uint8_t*opid);
 GATTPROP_Def *GattGetListInfor(uint8_t dt_list,uint8_t *count);
 uint8_t GattGetListProp(uint8_t dt_list,uint8_t id,uint8_t *prop);
+uint8_t GattGetDataStr(uint8_t list,uint8_t id,uint8_t*data);
 
 
 void GattSetPpid(uint8_t*pid,uint8_t size);
@@ -1168,6 +1169,8 @@ uint8_t* GattMultiFieldMerge(void);
 uint8_t GattGetData(uint8_t list,uint8_t id,uint8_t*data);
 uint8_t GattSetData(uint8_t list,uint8_t id,uint8_t*data);
 GATT1_Def* GattGetList(void);
+uint8_t GattGetListMeta(uint8_t dt_list,uint8_t id,uint8_t *meta);
+
 
 #ifdef ABACUSLEDER_SUPPORT
 void GattAbacSetReprotIndex(uint8_t index);

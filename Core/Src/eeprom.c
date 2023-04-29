@@ -174,7 +174,7 @@ uint32_t EEpGetTransFreq(void)
 
 uint32_t EEpGetSleepTime(void)
 {
-	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)
+	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)||defined(P10KW_PROJECT)
 	if(g_UserSet.sleeptime)
 		return g_UserSet.sleeptime*60*1000;
 	else

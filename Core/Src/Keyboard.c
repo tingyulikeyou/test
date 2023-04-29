@@ -548,6 +548,46 @@ void PKeybordProc(void)  //
 
 				//EEpUpdateEnable();
 				}
+
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+LOGSWC?");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+				
+				memset(tempBuff,0x00,128);
+
+				sprintf((char*)tempBuff,"+LOGSWC=%d\r\n",g_UserSet.log);
+				
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+
+				//EEpUpdateEnable();
+				}
+			p=(uint8_t*)strstr((char*)g_Uart5Buf,"AT+LOGSWC=");  //"ip ,port,username,password"
+			if(p!=NULL)
+			{
+				uint8_t tempBuff[128];
+				
+				memset(tempBuff,0x00,128);
+
+				if(p[10]==1)
+					g_UserSet.log=1;
+				else
+					g_UserSet.log=0;
+
+				sprintf((char*)tempBuff,"OK \r\n +LOGSWC=%d\r\n",g_UserSet.log);
+				
+				Uart5Send(tempBuff,strlen((char*)tempBuff));
+
+				memset((uint8_t*)g_Uart5Buf,0x00,UART5_RX_BUF_SIZE);
+			   	huart5.RxXferCount=0;
+				huart5.pRxBuffPtr=(uint8_t*)g_Uart5Buf; 
+
+				EEpUpdateEnable();
+				}
 		
 		
 		if((g_Uart5Buf[i]==0xc5&&g_Uart5Buf[i+1]==0x6a)&&g_Uart5Buf[i+2]==0x29)

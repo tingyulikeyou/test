@@ -3,7 +3,7 @@
 #define __PAYG_H__
 
 
-#define GATT_VERSON  "4.0.1"
+#define GATT_VERSON  "4.0.2"
 #define HASH_MAX        3287
 
 #define YES 0xA5D2635A
@@ -62,7 +62,7 @@ typedef struct
 	uint8_t oem_id[20];
 	uint8_t payg_id[20];
 	uint32_t hast_otp[2];
-        uint32_t hast_root[2]; 
+    uint32_t hast_root[2]; 
 	uint32_t recharge_days; 
 	uint32_t days_has_been_runing;//辰???DD足足那y
 	uint32_t remaing_days; //那㏒車角足足那y
@@ -75,7 +75,7 @@ typedef struct
 	uint32_t dem_time; ////?Y那??㏒那?那㏒車角那㊣??
 	//那㊣?????? 
 	uint32_t time_cnt; //??足足那㊣??角??? ﹞??車????
-        uint32_t day_cem;
+    uint32_t day_cem;
 	
    
 } PAYG_TypeDef;

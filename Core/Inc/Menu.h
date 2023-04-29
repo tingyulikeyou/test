@@ -11,6 +11,50 @@
 	 MENU_RM_DAY,
 	 MENU_NONE
  };
+#elif defined(LCD128X64_SUPPORT)
+  enum
+ {
+	 MENU_IDLE,  
+	 MENU_ATT,  
+	 MENU_CMD,
+	 MENU_STS,
+	 MENU_DTA,
+	 MENU_DIA,
+	 MENU_ATT_OPID,
+	 MENU_CMD_PUBK=MENU_ATT_OPID+ATT_COUNT,
+	 MENU_CMD_GSTW,	
+	 MENU_CMD_GCTW,
+	 MENU_CMD_NAPN,	
+	 MENU_CMD_SWCH,
+	 MENU_CMD_READ,
+	 MENU_CMD_RPTM,
+	 MENU_CMD_HBFQ,
+	 MENU_STS_1=MENU_CMD_PUBK+CMD_COUNT,
+	 MENU_DTA_1=MENU_STS_1+STS_COUNT,
+	 MENU_DIA_1=MENU_DTA_1+DTA_COUNT,
+	 MENU_PAYG=MENU_DIA_1+DIA_COUNT,
+	 MENU_PAYG_INPUT,
+	 MENU_NONE
+ };
+
+
+ #define INPUT_TITLE_X 31
+ #define INPUT_TITLE_Y 14
+
+ #define INPUT_LINE_X 0
+ #define INPUT_LINE_Y 26
+
+ #define INPUT_LINE1_X 0
+ #define INPUT_LINE1_Y 38
+
+ enum
+{
+	IDLE_ITEM_ATT,
+	IDLE_ITEM_CMD,
+	IDLE_ITEM_STS,
+	IDLE_ITEM_DTA,
+	IDLE_ITEM_DIA
+};
 
 #else
  enum
@@ -117,6 +161,9 @@ enum
 	POP_MENU_AC,
 	POP_MENU_DC,
 	POP_MENU_USB
+	#ifdef LCD128X64_SUPPORT
+	,POP_MENU_META
+	#endif
 };
 
 
@@ -130,6 +177,17 @@ typedef struct
     uint8_t saver:1;
     uint8_t flash:1;	
     uint8_t saver_index:6;	
+	
+	#ifdef LCD128X64_SUPPORT
+	uint8_t keyb_pos;
+	uint8_t keyb_down;
+	uint8_t scroll_enable:1;
+	uint8_t scroll_lock:1;
+	uint8_t scroll_pos:6;
+	uint8_t scroll_num;
+	//uint8_t keyb_valid_len;
+	//uint8_t keyb_input[34];
+	#endif
 }UI_MENU_TypeDef;
 
 

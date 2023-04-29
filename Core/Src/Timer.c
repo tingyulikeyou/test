@@ -125,7 +125,7 @@ void TimerInit(void)
 {
 	g_GprsUpload_timer.enable=TRUE;
 	g_GprsUpload_timer.period=TRUE;
-	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)
+	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)||defined(P10KW_PROJECT)
 	g_GprsUpload_timer.count=EEpGetSleepTime();
 	#else
 	g_GprsUpload_timer.count=GPRS_UPLOAD_PRIOD;
@@ -373,7 +373,7 @@ void TimerKbPwrHoldSet(uint32_t delay)
 
 void TimerGprsUploadCallback(TIMER_TypeDef *p)
 {
-	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)
+	#if defined(UI1K_V13_PROJECT)||defined(E_MOB48V_PROJECT)||defined(P10KW_PROJECT)
 	p->count=EEpGetSleepTime();
 	#else
 	p->count=GPRS_UPLOAD_PRIOD;
