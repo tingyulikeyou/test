@@ -7,6 +7,9 @@ uint8_t g_jbsbms_tx_buf[16];
 
 uint8_t g_JbsBmsCmd=JBS_CMD_INFOR;
 
+
+/*为啥不是DD 5A 30 02 18 00 FF B6 77控制时间g_jbdCmd_FETCtrlTime*/
+
 uint8_t g_jbdCmd_Factorymode[]={0xDD,0x5A,0x00,0x02,0x56,0x78,0xFF,0x30,0x77};
 uint8_t g_jbdCmd_FETCtrlTime[]={0xDD,0x5A,0x30,0x02,0x02,0x58,0xFF,0x74,0x77};
 uint8_t g_jbdCmd_FETCtrl5STime[]={0xDD,0x5A,0x30,0x02,0x00,0x05,0xFF,0xC9,0x77};
@@ -17,10 +20,12 @@ uint8_t g_jbdCmd_FETCtrlLongTime[]={0xDD,0x5A,0x30,0x02,0xFF,0xEF,0xFD,0xE0,0x77
 
 
 
-
+/*保留数退出工厂与擦除退出工厂*/
 uint8_t g_jbdCmd_ExitFactory[]={0xDD,0x5A,0x01,0x02,0x28,0x28,0xFF,0xAD,0x77};
 uint8_t g_jbdCmd_Exit0000Factory[]={0xDD,0x5A,0x01,0x02,0x00,0x00,0xFF,0xFD,0x77};
 
+
+/*?????????????????*/
 uint8_t g_charge_counter=0;
 uint16_t g_jbd_watchdog_timer=0;
 uint16_t g_jbd_epromWrite_timer=0;
@@ -94,7 +99,7 @@ void JbsBmsInit(void)
 
 }
 
-
+/*对命令取反+1获得指令的校验码*/
 uint16_t JbsBmsChecksum(uint8_t *cmd,uint8_t size)
 {
 	uint8_t i=0;
@@ -116,14 +121,14 @@ void JbsMosCtrl(uint8_t on)
 	
 	g_jbsbms_tx_buf[0]=0xdd;
 	g_jbsbms_tx_buf[1]=0x5a;
-    g_jbsbms_tx_buf[2]=0xe1;
+  g_jbsbms_tx_buf[2]=0xe1;
 	g_jbsbms_tx_buf[3]=2;
 	g_jbsbms_tx_buf[4]=00;
 
 	if(on)
-		g_jbsbms_tx_buf[5]=0x00;  //out
+		g_jbsbms_tx_buf[5]=0x00;  //解除软件关闭 MOS 管动作
 	else	
-		g_jbsbms_tx_buf[5]=0x02;  //out
+		g_jbsbms_tx_buf[5]=0x02;  //软件关闭放电 MOS，解除软件关闭充电 MOS
 
 	chksum=JbsBmsChecksum(g_jbsbms_tx_buf,2);
 

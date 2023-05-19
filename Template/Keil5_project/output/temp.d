@@ -2,7 +2,7 @@
 .\output\temp.o: ..\main.h
 .\output\temp.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\temp.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\temp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\temp.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\temp.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\temp.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\temp.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\temp.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\temp.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\temp.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\temp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\temp.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\temp.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\temp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\temp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\temp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\temp.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\temp.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\temp.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\temp.o: ..\..\Core\Inc\gatt.h
 .\output\temp.o: ..\..\Core\Inc\payg.h
 .\output\temp.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\temp.o: ..\..\Core\Inc\ble.h
 .\output\temp.o: ..\..\Core\Inc\OffGrid.h
 .\output\temp.o: ..\..\Core\Inc\Jbsbms.h
+.\output\temp.o: ..\..\Core\Inc\i2c.h
+.\output\temp.o: ..\..\Core\Inc\at24cxx.h
 .\output\temp.o: ..\..\Core\Inc\gps.h

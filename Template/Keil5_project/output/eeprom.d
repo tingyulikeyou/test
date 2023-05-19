@@ -2,7 +2,7 @@
 .\output\eeprom.o: ..\main.h
 .\output\eeprom.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\eeprom.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\eeprom.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\eeprom.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\eeprom.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\eeprom.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\eeprom.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\eeprom.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\eeprom.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\eeprom.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\eeprom.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\eeprom.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\eeprom.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\eeprom.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\eeprom.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\eeprom.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\eeprom.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\eeprom.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\eeprom.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\eeprom.o: ..\..\Core\Inc\gatt.h
 .\output\eeprom.o: ..\..\Core\Inc\payg.h
 .\output\eeprom.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\eeprom.o: ..\..\Core\Inc\ble.h
 .\output\eeprom.o: ..\..\Core\Inc\OffGrid.h
 .\output\eeprom.o: ..\..\Core\Inc\Jbsbms.h
+.\output\eeprom.o: ..\..\Core\Inc\i2c.h
+.\output\eeprom.o: ..\..\Core\Inc\at24cxx.h
 .\output\eeprom.o: ..\..\Core\Inc\gps.h

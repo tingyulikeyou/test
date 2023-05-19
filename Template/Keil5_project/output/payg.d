@@ -2,7 +2,7 @@
 .\output\payg.o: ..\main.h
 .\output\payg.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\payg.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\payg.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\payg.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\payg.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\payg.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\payg.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\payg.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\payg.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\payg.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\payg.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\payg.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\payg.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\payg.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\payg.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\payg.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\payg.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\payg.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\payg.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\payg.o: ..\..\Core\Inc\gatt.h
 .\output\payg.o: ..\..\Core\Inc\payg.h
 .\output\payg.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\payg.o: ..\..\Core\Inc\ble.h
 .\output\payg.o: ..\..\Core\Inc\OffGrid.h
 .\output\payg.o: ..\..\Core\Inc\Jbsbms.h
+.\output\payg.o: ..\..\Core\Inc\i2c.h
+.\output\payg.o: ..\..\Core\Inc\at24cxx.h
 .\output\payg.o: ..\..\Core\Inc\gps.h

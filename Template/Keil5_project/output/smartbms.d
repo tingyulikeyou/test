@@ -2,7 +2,7 @@
 .\output\smartbms.o: ..\main.h
 .\output\smartbms.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\smartbms.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\smartbms.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\smartbms.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\smartbms.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\smartbms.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\smartbms.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\smartbms.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\smartbms.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\smartbms.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\smartbms.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\smartbms.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\smartbms.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\smartbms.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\smartbms.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\smartbms.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\smartbms.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\smartbms.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\smartbms.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\smartbms.o: ..\..\Core\Inc\gatt.h
 .\output\smartbms.o: ..\..\Core\Inc\payg.h
 .\output\smartbms.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\smartbms.o: ..\..\Core\Inc\ble.h
 .\output\smartbms.o: ..\..\Core\Inc\OffGrid.h
 .\output\smartbms.o: ..\..\Core\Inc\Jbsbms.h
+.\output\smartbms.o: ..\..\Core\Inc\i2c.h
+.\output\smartbms.o: ..\..\Core\Inc\at24cxx.h
 .\output\smartbms.o: ..\..\Core\Inc\gps.h

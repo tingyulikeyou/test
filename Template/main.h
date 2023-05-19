@@ -58,7 +58,7 @@ OF SUCH DAMAGE.
 
 
 #ifdef P10KW_PROJECT
-#define BMS_OFFGRID_SUPPROT
+#define BMS_OFFGRID_SUPPROT            //ÐÞ¸ÄÁË×¢ÊÍ
 #elif defined(E_MOB48V_PROJECT)
 //#define BMS_SMARTLI_SUPPROT
 #define BMS_JBD_SUPPROT
@@ -70,6 +70,9 @@ OF SUCH DAMAGE.
 #endif
 
 //others 
+
+
+
 #define GPS_SUPPORT
 #define E_SIM_SUPPORT 
 #define ROLL_SWITCH
@@ -82,7 +85,6 @@ OF SUCH DAMAGE.
 
 //#define DUBUG_LOG 
 //#define PUMP_TEST
-
 
 #define CAN0_USED
 //#define CAN1_USED

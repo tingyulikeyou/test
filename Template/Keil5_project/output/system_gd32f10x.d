@@ -1,7 +1,7 @@
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Source\system_gd32f10x.c
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\system_gd32f10x.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\system_gd32f10x.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\system_gd32f10x.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -29,5 +29,5 @@
 .\output\system_gd32f10x.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\system_gd32f10x.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\system_gd32f10x.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\system_gd32f10x.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\system_gd32f10x.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\system_gd32f10x.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h

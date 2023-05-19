@@ -2,7 +2,7 @@
 .\output\gd32f10x_usart.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_usart.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\gd32f10x_usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\gd32f10x_usart.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,5 +30,5 @@
 .\output\gd32f10x_usart.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\gd32f10x_usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\gd32f10x_usart.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\gd32f10x_usart.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h

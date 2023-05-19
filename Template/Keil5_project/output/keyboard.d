@@ -2,7 +2,7 @@
 .\output\keyboard.o: ..\main.h
 .\output\keyboard.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\keyboard.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\keyboard.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\keyboard.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\keyboard.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\keyboard.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\keyboard.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\keyboard.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\keyboard.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\keyboard.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\keyboard.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\keyboard.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\keyboard.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\keyboard.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\keyboard.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\keyboard.o: ..\..\Core\Inc\gatt.h
 .\output\keyboard.o: ..\..\Core\Inc\payg.h
 .\output\keyboard.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\keyboard.o: ..\..\Core\Inc\ble.h
 .\output\keyboard.o: ..\..\Core\Inc\OffGrid.h
 .\output\keyboard.o: ..\..\Core\Inc\Jbsbms.h
+.\output\keyboard.o: ..\..\Core\Inc\i2c.h
+.\output\keyboard.o: ..\..\Core\Inc\at24cxx.h
 .\output\keyboard.o: ..\..\Core\Inc\gps.h

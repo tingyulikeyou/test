@@ -2,7 +2,7 @@
 .\output\bq40z50.o: ..\main.h
 .\output\bq40z50.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\bq40z50.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\bq40z50.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\bq40z50.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\bq40z50.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\bq40z50.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\bq40z50.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\bq40z50.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\bq40z50.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\bq40z50.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\bq40z50.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\bq40z50.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\bq40z50.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\bq40z50.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\bq40z50.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\bq40z50.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\bq40z50.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\bq40z50.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\bq40z50.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\bq40z50.o: ..\..\Core\Inc\gatt.h
 .\output\bq40z50.o: ..\..\Core\Inc\payg.h
 .\output\bq40z50.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\bq40z50.o: ..\..\Core\Inc\ble.h
 .\output\bq40z50.o: ..\..\Core\Inc\OffGrid.h
 .\output\bq40z50.o: ..\..\Core\Inc\Jbsbms.h
+.\output\bq40z50.o: ..\..\Core\Inc\i2c.h
+.\output\bq40z50.o: ..\..\Core\Inc\at24cxx.h
 .\output\bq40z50.o: ..\..\Core\Inc\gps.h

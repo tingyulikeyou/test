@@ -2,7 +2,7 @@
 .\output\gd32f10x_it.o: ..\gd32f10x_it.h
 .\output\gd32f10x_it.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\gd32f10x_it.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\gd32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\gd32f10x_it.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\gd32f10x_it.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\gd32f10x_it.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\gd32f10x_it.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,12 +30,12 @@
 .\output\gd32f10x_it.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\gd32f10x_it.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\gd32f10x_it.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\gd32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\gd32f10x_it.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\gd32f10x_it.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
 .\output\gd32f10x_it.o: ..\main.h
-.\output\gd32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\gd32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\gd32f10x_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\gd32f10x_it.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\gd32f10x_it.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\gd32f10x_it.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\gatt.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\payg.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\eeprom.h
@@ -58,5 +58,7 @@
 .\output\gd32f10x_it.o: ..\..\Core\Inc\ble.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\OffGrid.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\Jbsbms.h
+.\output\gd32f10x_it.o: ..\..\Core\Inc\i2c.h
+.\output\gd32f10x_it.o: ..\..\Core\Inc\at24cxx.h
 .\output\gd32f10x_it.o: ..\..\Core\Inc\gps.h
 .\output\gd32f10x_it.o: ..\systick.h

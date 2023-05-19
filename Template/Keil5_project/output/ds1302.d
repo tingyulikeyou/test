@@ -2,7 +2,7 @@
 .\output\ds1302.o: ..\main.h
 .\output\ds1302.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\gd32f10x.h
 .\output\ds1302.o: ..\..\Firmware\CMSIS\core_cm3.h
-.\output\ds1302.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\output\ds1302.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\output\ds1302.o: ..\..\Firmware\CMSIS\core_cmInstr.h
 .\output\ds1302.o: ..\..\Firmware\CMSIS\core_cmFunc.h
 .\output\ds1302.o: ..\..\Firmware\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h
@@ -30,11 +30,11 @@
 .\output\ds1302.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h
 .\output\ds1302.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_can.h
 .\output\ds1302.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h
-.\output\ds1302.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\output\ds1302.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\ds1302.o: ..\..\Firmware\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h
-.\output\ds1302.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-.\output\ds1302.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\ds1302.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\output\ds1302.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\ds1302.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\ds1302.o: D:\app_for_work\arm_keil\ARM\ARMCC\Bin\..\include\string.h
 .\output\ds1302.o: ..\..\Core\Inc\gatt.h
 .\output\ds1302.o: ..\..\Core\Inc\payg.h
 .\output\ds1302.o: ..\..\Core\Inc\eeprom.h
@@ -57,4 +57,6 @@
 .\output\ds1302.o: ..\..\Core\Inc\ble.h
 .\output\ds1302.o: ..\..\Core\Inc\OffGrid.h
 .\output\ds1302.o: ..\..\Core\Inc\Jbsbms.h
+.\output\ds1302.o: ..\..\Core\Inc\i2c.h
+.\output\ds1302.o: ..\..\Core\Inc\at24cxx.h
 .\output\ds1302.o: ..\..\Core\Inc\gps.h
